@@ -66,10 +66,12 @@ INSERT INTO `User`(`login`, `password`, `UserType_name`) VALUES ('user3', 'user3
 INSERT INTO `User`(`login`, `password`, `UserType_name`) VALUES ('user4', 'user4', 'User');
 INSERT INTO `User`(`login`, `password`, `UserType_name`) VALUES ('user5', 'user5', 'User');
 
-INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`) VALUES (1, 1);
-INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`) VALUES (1, 2);
-INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`) VALUES (1, 3);
-INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`) VALUES (1, 4);
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 1, 'Director');
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 1, 'Writer');
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 1, 'Producer');
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 2, 'Actor');
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 3, 'Actor');
+INSERT INTO `Movie_has_Artist`(`Movie_idMovie`, `Artist_idArtist`, `ArtistType_name`) VALUES (1, 4, 'Music');
 
 INSERT INTO `Prize`(`idPrize`, `name`, `whatFor`, `date`, `Artist_idArtist`, `Movie_idMovie`) VALUES (1, 'Oscar', 'Best Director', '1998', 1, 1);
 INSERT INTO `Prize`(`idPrize`, `name`, `whatFor`, `date`, `Artist_idArtist`, `Movie_idMovie`) VALUES (2, 'Oscar', 'Best Music', '1998', 4, 1);
