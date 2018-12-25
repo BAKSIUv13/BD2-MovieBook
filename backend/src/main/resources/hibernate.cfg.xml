@@ -26,5 +26,8 @@
          piotrsalata
       </property>
       
+      <mapping class="pl.moviebook.entities.Artist"/>
+      <mapping class="pl.moviebook.entities.User"/>
+      
    </session-factory>
 </hibernate-configuration>
