@@ -3,7 +3,9 @@ import React , { Component } from 'react';
 
 import JSON from '../json/Movies.json';
 import MovieListItem from "./MovieListItem"
-import Movie from "./Movie"
+import TextField from '@material-ui/core/TextField';
+
+import "../css/MovieList.css"
 
 class MovieList extends Component {
 
@@ -11,13 +13,37 @@ class MovieList extends Component {
     super(props);
     
     this.state = {
-      movies : JSON
+      movies : JSON,
+      filtered : [],
+      searching : false
     }
   }
+
+
+  //this function filters json, looking for a title corresponding to given word
+  filterMovies = (event) => {
+    let filtered = this.state.movies.filter(item => {
+      //toUpperCase, so user doesn't have to bother about Upper or Lower case sensitive titles.
+      return item.title.toUpperCase().indexOf(event.target.value.toUpperCase()) > -1;
+    });
+
+    this.setState({
+      filtered: filtered,
+      searching:  event.target.value.length > 0 
+    });
+  }
+
   render() {
+    //we want to display either whole list of movies or filtered list depending on the users input
+    let movies = this.state.filtered.length === 0 ? this.state.movies : this.state.filtered;
+    if(this.state.filtered.length === 0 && this.state.searching === true) {
+      movies = []
+    }
+    
     return (
       <div>
-          <MovieListItem movies={this.state.movies}/>          
+          <TextField id="outlined-search" label="Search" margin="normal" varian="outlined" placeholder="Search" onChange={this.filterMovies}></TextField>
+          <MovieListItem className="list" movies={movies}/>          
       </div>
     );
   }
