@@ -29,6 +29,9 @@ public class Artist implements Serializable {
 	@Column(name="birthDate")
 	private String date;
 
+	@Column(name="pictureUrl")
+	private String pictureUrl;
+
 	public int getId() {
 		return id;
 	}
@@ -68,5 +71,19 @@ public class Artist implements Serializable {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	
+
+	/**
+	 * @return the pictureUrl
+	 */
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	/**
+	 * @param pictureUrl the pictureUrl to set
+	 */
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
+		
 }
