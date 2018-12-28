@@ -18,6 +18,8 @@ To run backend:
 
 `$ ./mvnw package`
 
+`$ java -jar target/backend-1.0.jar`
+
 To clean build:
 
 `$ ./mvnw clean`
