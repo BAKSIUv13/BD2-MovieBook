@@ -17,11 +17,9 @@ public class Cinema implements Serializable {
     @Column(name="idCinema")
     private int idCinema;
 
-    @Id
     @Column(name="name")
     private String name;
 
-    @Id
     @Column(name="city")
     private String city;
 
