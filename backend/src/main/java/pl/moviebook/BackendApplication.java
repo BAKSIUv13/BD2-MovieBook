@@ -3,6 +3,7 @@ package pl.moviebook;
 import pl.moviebook.entities.*;
 
 import java.util.List;
+import java.sql.SQLException;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -33,6 +34,7 @@ public class BackendApplication {
 		return list;
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/login/{login}/{password}")
 	@ResponseBody
 	public String login(@PathVariable("login") String login,
@@ -52,6 +54,7 @@ public class BackendApplication {
 			System.out.print(e);
 			userTypeResult = null;
 		}
+		session.close();
 		
 		return userTypeResult;
 	}
@@ -86,6 +89,30 @@ public class BackendApplication {
 		session.close();
 
 		return movie;
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/register/{login}/{password}")
+	@ResponseBody
+	public String register(@PathVariable("login") String login,
+						@PathVariable("password") String password) {
+		Session session = Connection.getSession();
+		session.beginTransaction();
+		User user = new User();
+		user.setLogin(login);
+		user.setPassword(password);
+		user.setUserType("User");
+		session.save(user);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
 	}
 	
 	public static void main(String[] args) {
