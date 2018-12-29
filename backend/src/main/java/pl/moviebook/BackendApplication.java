@@ -1,5 +1,6 @@
 package pl.moviebook;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import pl.moviebook.entities.Artist;
+import pl.moviebook.entities.User;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +36,7 @@ public class BackendApplication {
 		return list;
 	}
 	
+	@CrossOrigin
 	@RequestMapping("/login/{login}/{password}")
 	@ResponseBody
 	public String login(@PathVariable("login") String login,
@@ -52,8 +55,33 @@ public class BackendApplication {
 			System.out.print(e);
 			userTypeResult = null;
 		}
+		session.close();
 		
 		return userTypeResult;
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/register/{login}/{password}")
+	@ResponseBody
+	public String register(@PathVariable("login") String login,
+						@PathVariable("password") String password) {
+		Session session = Connection.getSession();
+		session.beginTransaction();
+		User user = new User();
+		user.setLogin(login);
+		user.setPassword(password);
+		user.setUserType("User");
+		session.save(user);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
 	}
 	
 	public static void main(String[] args) {
