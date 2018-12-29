@@ -25,8 +25,7 @@ public class BackendApplication {
 	public List<Artist> getAllArtists() {
 		Session session = Connection.getSession();
 
-		String queryString = "from Artist";
-		Query<Artist> query = session.createQuery(queryString);
+		Query<Artist> query = session.createQuery("from Artist");
 		List<Artist> list = query.list();
 		
 		session.close();
@@ -62,13 +61,31 @@ public class BackendApplication {
 	public List<Artist> getAllCinemas() {
 		Session session = Connection.getSession();
 
-		String queryString = "from Cinema";
-		Query<Artist> query = session.createQuery(queryString);
+		Query<Artist> query = session.createQuery("from Cinema");
 		List<Artist> list = query.list();
 		
 		session.close();
 
 		return list;
+	}
+
+	@RequestMapping("/movie/{idMovie}")
+	@ResponseBody
+	public Movie getMovie(@PathVariable("idMovie") int idMovie) {
+		Session session = Connection.getSession();
+
+		Movie movie;
+
+		try {
+            movie =  (Movie) session.get(Movie.class, idMovie);
+        } catch (Exception e) {
+			System.out.print(e);
+			movie = null;
+		}
+
+		session.close();
+
+		return movie;
 	}
 	
 	public static void main(String[] args) {
