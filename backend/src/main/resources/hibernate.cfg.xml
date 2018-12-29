@@ -18,6 +18,8 @@
          jdbc:mysql://serwer1847553.home.pl/29209262_bd2
       </property>
       
+      <!-- TODO username and password in ENV -->
+
       <property name = "hibernate.connection.username">
          29209262_bd2
       </property>
@@ -28,6 +30,8 @@
       
       <mapping class="pl.moviebook.entities.Artist"/>
       <mapping class="pl.moviebook.entities.User"/>
+      <mapping class="pl.moviebook.entities.Cinema"/>
+      <mapping class="pl.moviebook.entities.Movie"/>
       
    </session-factory>
 </hibernate-configuration>
