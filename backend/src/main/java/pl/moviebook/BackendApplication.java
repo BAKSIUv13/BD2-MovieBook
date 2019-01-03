@@ -1,9 +1,7 @@
 package pl.moviebook;
 
-import pl.moviebook.entities.*;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.sql.SQLException;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -13,6 +11,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import pl.moviebook.dbEntities.*;
+import pl.moviebook.otherEntities.ArtistInFilmBasicInformations;
+import pl.moviebook.otherEntities.MovieBasicInformations;
+import pl.moviebook.otherEntities.MovieFullInformations;
+import pl.moviebook.otherEntities.ReviewWithLikes;
+import pl.moviebook.otherEntities.ShowWithCinema;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -71,10 +77,39 @@ public class BackendApplication {
 
 		return list;
 	}
+	
+	@RequestMapping("/allMovies")
+	@ResponseBody
+	public List<MovieBasicInformations> getAllMovies() {
+		Session session = Connection.getSession();
+		
+		Query<Movie> query = session.createQuery("from Movie");
+		List<Movie> result = query.list();
+		List<MovieBasicInformations> liteResult = new ArrayList<>();
+		
+		for(Movie movie : result) {
+			
+			List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+			
+			MovieBasicInformations movieLite = new MovieBasicInformations(movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), movie.getPictureUrl(), genres);
+			liteResult.add(movieLite);
+		}
+		
+		session.close();
+		return liteResult;
+	}
+	
+	private List<String> getMovieGenres(int movieId, Session session) {
+		Query querySQL = session.createSQLQuery("SELECT Movie_has_Genre.Genre_name FROM Movie_has_Genre "
+				+ "INNER JOIN Movie ON Movie_has_Genre.Movie_idMovie = Movie.idMovie WHERE Movie.idMovie = :id")
+				.setParameter("id", movieId);
+		
+		return querySQL.list();
+	}
 
 	@RequestMapping("/movie/{idMovie}")
 	@ResponseBody
-	public Movie getMovie(@PathVariable("idMovie") int idMovie) {
+	public MovieFullInformations getMovie(@PathVariable("idMovie") int idMovie) {
 		Session session = Connection.getSession();
 
 		Movie movie;
@@ -83,12 +118,55 @@ public class BackendApplication {
             movie =  (Movie) session.get(Movie.class, idMovie);
         } catch (Exception e) {
 			System.out.print(e);
-			movie = null;
+			session.close();
+			return null;
 		}
+		List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+		
+		Query querySQL = session.createSQLQuery("SELECT artist.idArtist, artist.name, artist.surname, artist.pictureUrl, a.Role, type.ArtistType_name FROM Artist as artist " + 
+				"INNER JOIN Artist_has_ArtistType as type ON type.Artist_idArtist = artist.idArtist " + 
+				"INNER JOIN Movie_has_Artist as a ON type.id = a.Artist_has_ArtistType_id " + 
+				"INNER JOIN Movie as movie ON movie.idMovie = a.Movie_idMovie " + 
+				"WHERE movie.idMovie = :id")
+				.setParameter("id", movie.getIdMovie());
+		
+		List<Object[]> artistsQueryResult = (List<Object[]>) querySQL.list();
+		List<ArtistInFilmBasicInformations> artists = new ArrayList<>();
+		
+		for( Object[] artist : artistsQueryResult) {
+			ArtistInFilmBasicInformations data = new ArtistInFilmBasicInformations((int) artist[0], (String) artist[1],
+					(String) artist[2],(String) artist[3],(String) artist[5], (String) artist[4]);
+			artists.add(data);
+		}
+		
+		/*querySQL = session.createSQLQuery("SELECT Review.idReview, Review.content, 0 FROM Review " + 
+				"INNER JOIN Movie ON Review.Movie_idMovie = Movie.idMovie " + 
+				"WHERE Movie.idMovie = :id")
+				.setParameter("id", movie.getIdMovie());
+		
+		List<ReviewWithLikes> reviews = (List<ReviewWithLikes>) querySQL.list();
+		
+		for(ReviewWithLikes review : reviews) {
+			querySQL = session.createSQLQuery("SELECT SUM(`Like`.Review_idReview) FROM `Like` WHERE `Like`.Review_idReview = :id")
+					.setParameter("id", review.getIdReview());
+			int amountOfLikes = (int) querySQL.getSingleResult();
+			
+			review.setAmountOfLikes(amountOfLikes);
+		}*/
+		List<ReviewWithLikes> reviews = new ArrayList<>();
+		List<Prize> prizes = new ArrayList<>();
+		List<ShowWithCinema> shows = new ArrayList<>();
+		List<TvProgram> transmitions = new ArrayList<>();
+		double rating = 1.1;
+		
+		MovieFullInformations movieFull = new MovieFullInformations(movie.getIdMovie(), movie.getTitle(),
+				movie.getLanguage(), movie.getDateOfPremiere(), movie.getBoxOffice(), movie.getCountry(), 
+				movie.getDescription(), movie.getPictureUrl(), artists, reviews, prizes, shows, transmitions, rating, genres);  
+		
 
 		session.close();
 
-		return movie;
+		return movieFull;
 	}
 	
 	@CrossOrigin

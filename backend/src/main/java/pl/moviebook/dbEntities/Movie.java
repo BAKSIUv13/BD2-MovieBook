@@ -1,4 +1,4 @@
-package pl.moviebook.entities;
+package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
 import java.sql.Date;
