@@ -25,7 +25,7 @@ public class Prize implements Serializable {
 	private String whatFor;
 	
 	@Column(name="date")
-	private Date date;
+	private int date;
 	
 	@Column(name="Artist_idArtist")
 	private int idArtist;
@@ -57,11 +57,11 @@ public class Prize implements Serializable {
 		this.whatFor = whatFor;
 	}
 
-	public Date getDate() {
+	public int getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(int date) {
 		this.date = date;
 	}
 

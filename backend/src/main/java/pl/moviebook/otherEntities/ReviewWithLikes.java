@@ -4,11 +4,12 @@ public class ReviewWithLikes {
 
 	private int idReview;
 	private String content;
-	private int amountOfLikes = 0;
+	private int amountOfLikes;
 	
-	public ReviewWithLikes(int idReview, String content) {
+	public ReviewWithLikes(int idReview, String content, int amountOfLikes) {
 		this.idReview = idReview;
 		this.content = content;
+		this.amountOfLikes = amountOfLikes;
 	}
 	
 	public int getIdReview() {

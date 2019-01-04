@@ -1,5 +1,6 @@
 package pl.moviebook.otherEntities;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -23,12 +24,12 @@ public class MovieFullInformations {
 	    List<ReviewWithLikes> reviews;
 	    List<Prize> prizes;
 	    List<ShowWithCinema> shows;
-	    List<TvProgram> transmitions;
-	    double rating;
+	    List<TvProgramBasicInformations> transmitions;
+	    BigDecimal rating;
 	    
 	    public MovieFullInformations(int idMovie, String title, String language, Date dateOfPremiere, int boxOffice,String country,
 	    	String description, String pictureUrl, List<ArtistInFilmBasicInformations> artists, List<ReviewWithLikes> reviews,
-	    	List<Prize> prizes, List<ShowWithCinema> shows, List<TvProgram> transmitions, double rating, List<String> genres) {
+	    	List<Prize> prizes, List<ShowWithCinema> shows, List<TvProgramBasicInformations> transmitions, BigDecimal rating, List<String> genres) {
 		this.idMovie = idMovie;
 		this.title = title;
 		this.language = language;
@@ -118,16 +119,16 @@ public class MovieFullInformations {
 		public void setShows(List<ShowWithCinema> shows) {
 			this.shows = shows;
 		}
-		public List<TvProgram> getTransmitions() {
+		public List<TvProgramBasicInformations> getTransmitions() {
 			return transmitions;
 		}
-		public void setTransmitions(List<TvProgram> transmitions) {
+		public void setTransmitions(List<TvProgramBasicInformations> transmitions) {
 			this.transmitions = transmitions;
 		}
-		public double getRating() {
+		public BigDecimal getRating() {
 			return rating;
 		}
-		public void setRating(double rating) {
+		public void setRating(BigDecimal rating) {
 			this.rating = rating;
 		}
 

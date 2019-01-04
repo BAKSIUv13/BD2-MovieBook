@@ -1,5 +1,8 @@
 package pl.moviebook;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +21,7 @@ import pl.moviebook.otherEntities.MovieBasicInformations;
 import pl.moviebook.otherEntities.MovieFullInformations;
 import pl.moviebook.otherEntities.ReviewWithLikes;
 import pl.moviebook.otherEntities.ShowWithCinema;
+import pl.moviebook.otherEntities.TvProgramBasicInformations;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -132,38 +136,63 @@ public class BackendApplication {
 				"WHERE movie.idMovie = :id")
 				.setParameter("id", movie.getIdMovie());
 		
-		List<Object[]> artistsQueryResult = (List<Object[]>) querySQL.list();
+		List<Object[]> artistsSQLResult = (List<Object[]>) querySQL.list();
 		List<ArtistInFilmBasicInformations> artists = new ArrayList<>();
 		
-		for( Object[] artist : artistsQueryResult) {
+		for( Object[] artist : artistsSQLResult) {
 			ArtistInFilmBasicInformations data = new ArtistInFilmBasicInformations((int) artist[0], (String) artist[1],
 					(String) artist[2],(String) artist[3],(String) artist[5], (String) artist[4]);
 			artists.add(data);
 		}
 		
-		/*querySQL = session.createSQLQuery("SELECT Review.idReview, Review.content, 0 FROM Review " + 
+		querySQL = session.createSQLQuery("SELECT Review.idReview, Review.content FROM Review " + 
 				"INNER JOIN Movie ON Review.Movie_idMovie = Movie.idMovie " + 
 				"WHERE Movie.idMovie = :id")
 				.setParameter("id", movie.getIdMovie());
 		
-		List<ReviewWithLikes> reviews = (List<ReviewWithLikes>) querySQL.list();
-		
-		for(ReviewWithLikes review : reviews) {
-			querySQL = session.createSQLQuery("SELECT SUM(`Like`.Review_idReview) FROM `Like` WHERE `Like`.Review_idReview = :id")
-					.setParameter("id", review.getIdReview());
-			int amountOfLikes = (int) querySQL.getSingleResult();
-			
-			review.setAmountOfLikes(amountOfLikes);
-		}*/
+		List<Object[]> reviewsSQLResult = (List<Object[]>) querySQL.list();
 		List<ReviewWithLikes> reviews = new ArrayList<>();
-		List<Prize> prizes = new ArrayList<>();
-		List<ShowWithCinema> shows = new ArrayList<>();
-		List<TvProgram> transmitions = new ArrayList<>();
-		double rating = 1.1;
+		
+		for(Object[] review : reviewsSQLResult) {
+			
+			querySQL = session.createSQLQuery("SELECT COUNT(Review_idReview) FROM `Like` WHERE `Like`.Review_idReview = :id")
+					.setParameter("id", (int) review[0]);
+			int amountOfLikes = ((BigInteger) querySQL.getSingleResult()).intValue();
+			
+			reviews.add(new ReviewWithLikes((int) review[0], (String) review[1], amountOfLikes));
+		}
+		
+		querySQL = session.createQuery("FROM Prize WHERE Movie_idMovie = :id").setParameter("id", movie.getIdMovie());
+		List<Prize> prizes = (List<Prize>) querySQL.list();
+		
+		List<ShowWithCinema> showsWithCinema = new ArrayList<>();
+		querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Cinema.name, Cinema.city FROM `Show` "
+				+ "INNER JOIN Cinema ON `Show`.Cinema_idCinema = Cinema.idCinema WHERE `Show`.Movie_idMovie = :id")
+				.setParameter("id", movie.getIdMovie());
+		List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
+		
+		for(Object[] show : showsSQLResult) {
+			showsWithCinema.add(new ShowWithCinema(((Timestamp) show[0]), (String) show[1], (String) show[2]));
+		}
+		
+		List<TvProgramBasicInformations> transmitions = new ArrayList<>();
+		querySQL = session.createSQLQuery("SELECT TvProgram.station, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
+				.setParameter("id", movie.getIdMovie());
+		
+		List<Object[]> transmitionsSQLResult = querySQL.list();
+		
+		for(Object[] transmition : transmitionsSQLResult) {
+			transmitions.add(new TvProgramBasicInformations((String) transmition[0], (Timestamp) transmition[1]));
+		}
+		
+		
+		BigDecimal rating = (BigDecimal) session.createSQLQuery("SELECT AVG(rate) FROM Rating WHERE Movie_idMovie = :id")
+				.setParameter("id", movie.getIdMovie())
+				.getSingleResult();
 		
 		MovieFullInformations movieFull = new MovieFullInformations(movie.getIdMovie(), movie.getTitle(),
 				movie.getLanguage(), movie.getDateOfPremiere(), movie.getBoxOffice(), movie.getCountry(), 
-				movie.getDescription(), movie.getPictureUrl(), artists, reviews, prizes, shows, transmitions, rating, genres);  
+				movie.getDescription(), movie.getPictureUrl(), artists, reviews, prizes, showsWithCinema, transmitions, rating, genres);  
 		
 
 		session.close();
