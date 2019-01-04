@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
-
+import org.hibernate.SessionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
@@ -27,13 +27,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 @SpringBootApplication
 public class BackendApplication {
 	
-	Session session = Connection.getSession();	
+	SessionFactory sessionFactory = Connection.getSessionFactory();
+	
 	@RequestMapping("/allArtists")
 	@ResponseBody
 	public List<Artist> getAllArtists() {
+		Session session = sessionFactory.openSession();
 
 		Query<Artist> query = session.createQuery("from Artist");
 		List<Artist> list = query.list();
+		
+		session.close();
 
 		return list;
 	}
@@ -43,6 +47,8 @@ public class BackendApplication {
 	@ResponseBody
 	public String login(@PathVariable("login") String login,
 						@PathVariable("password") String password) {
+		
+		Session session = sessionFactory.openSession();
 		
 		Query query = session.createSQLQuery("SELECT UserType_name FROM User WHERE login = :login AND password = :password")
 				.setParameter("login", login)
@@ -56,6 +62,7 @@ public class BackendApplication {
 			System.out.print(e);
 			userTypeResult = null;
 		}
+		session.close();
 		
 		return userTypeResult;
 	}
@@ -63,9 +70,12 @@ public class BackendApplication {
 	@RequestMapping("/allCinemas")
 	@ResponseBody
 	public List<Artist> getAllCinemas() {
+		Session session = sessionFactory.openSession();
 
 		Query<Artist> query = session.createQuery("from Cinema");
 		List<Artist> list = query.list();
+		
+		session.close();
 
 		return list;
 	}
@@ -73,6 +83,7 @@ public class BackendApplication {
 	@RequestMapping("/allMovies")
 	@ResponseBody
 	public List<MovieBasicInformations> getAllMovies() {
+		Session session = sessionFactory.openSession();
 		
 		Query<Movie> query = session.createQuery("from Movie");
 		List<Movie> result = query.list();
@@ -86,6 +97,7 @@ public class BackendApplication {
 			liteResult.add(movieLite);
 		}
 		
+		session.close();
 		return liteResult;
 	}
 	
@@ -100,6 +112,7 @@ public class BackendApplication {
 	@RequestMapping("/movie/{idMovie}")
 	@ResponseBody
 	public MovieFullInformations getMovie(@PathVariable("idMovie") int idMovie) {
+		Session session = sessionFactory.openSession();
 
 		Movie movie;
 
@@ -152,6 +165,9 @@ public class BackendApplication {
 				movie.getLanguage(), movie.getDateOfPremiere(), movie.getBoxOffice(), movie.getCountry(), 
 				movie.getDescription(), movie.getPictureUrl(), artists, reviews, prizes, shows, transmitions, rating, genres);  
 		
+
+		session.close();
+
 		return movieFull;
 	}
 	
@@ -160,7 +176,7 @@ public class BackendApplication {
 	@ResponseBody
 	public String register(@PathVariable("login") String login,
 						@PathVariable("password") String password) {
-
+		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		User user = new User();
 		user.setLogin(login);
@@ -173,7 +189,7 @@ public class BackendApplication {
 			session.close();
 			return "Unsuccessful";
 		}
-		
+		session.close();
 		return "Successful";
 		
 		
