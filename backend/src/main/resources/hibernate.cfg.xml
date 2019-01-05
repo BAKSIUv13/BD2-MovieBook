@@ -28,10 +28,14 @@
          piotrsalata
       </property>
       
-      <mapping class="pl.moviebook.entities.Artist"/>
-      <mapping class="pl.moviebook.entities.User"/>
-      <mapping class="pl.moviebook.entities.Cinema"/>
-      <mapping class="pl.moviebook.entities.Movie"/>
+      <mapping class="pl.moviebook.dbEntities.Artist"/>
+      <mapping class="pl.moviebook.dbEntities.User"/>
+      <mapping class="pl.moviebook.dbEntities.Cinema"/>
+      <mapping class="pl.moviebook.dbEntities.Movie"/>
+      <mapping class="pl.moviebook.dbEntities.Genre"/>
+      <mapping class="pl.moviebook.dbEntities.Prize"/>
+      <mapping class="pl.moviebook.dbEntities.Review"/>
+      <mapping class="pl.moviebook.dbEntities.TvProgram"/>
       
    </session-factory>
 </hibernate-configuration>
