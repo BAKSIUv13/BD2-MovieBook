@@ -28,7 +28,7 @@ INSERT INTO `Artist_has_ArtistType`(`id`, `Artist_idArtist`, `ArtistType_name`) 
 INSERT INTO `Artist_has_ArtistType`(`id`, `Artist_idArtist`, `ArtistType_name`) VALUES (5, 1, 'Producer');
 INSERT INTO `Artist_has_ArtistType`(`id`, `Artist_idArtist`, `ArtistType_name`) VALUES (6, 4, 'Music');
 
-INSERT INTO `Movie`(`idMovie`, `title`, `language`, `dateOfPremiere`, `boxOffice`, `country`, `description`, `pictureUrl`) VALUES (1, 'Titanic', 'English', '1997-11-01', 200000000, 'USA', ' A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.', 'https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_SY1000_CR0,0,671,1000_AL_.jpg');
+INSERT INTO `Movie`(`idMovie`, `title`, `language`, `dateOfPremiere`, `boxOffice`, `country`, `description`, `pictureUrl`) VALUES (1, 'Titanic', 'English', '1997-11-01', 200000000, 'USA', ' A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.', 'https://i.pinimg.com/originals/1a/70/6e/1a706e0021180f77cf766c219319045f.jpg');
 INSERT INTO  `29209262_bd2`.`Movie` (
 `idMovie` ,
 `title` ,
