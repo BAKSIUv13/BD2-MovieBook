@@ -40,7 +40,7 @@ INSERT INTO  `29209262_bd2`.`Movie` (
 `pictureUrl`
 )
 VALUES (
-'2',  'Deadpool',  'English',  '2016-01-21',  '783100000',  'USA', 'A fast-talking mercenary with a morbid sense of humor is subjected to a rogue experiment that leaves him with accelerated healing powers and a quest for revenge.', 'https://ssl-gfx.filmweb.pl/po/46/75/514675/7716978.2.jpg'
+'2',  'Deadpool',  'English',  '2016-01-21',  '783100000',  'USA', 'A fast-talking mercenary with a morbid sense of humor is subjected to a rogue experiment that leaves him with accelerated healing powers and a quest for revenge.', 'https://i.pinimg.com/originals/1a/70/6e/1a706e0021180f77cf766c219319045f.jpg'
 );
 
 
