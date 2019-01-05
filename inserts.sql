@@ -29,6 +29,21 @@ INSERT INTO `Artist_has_ArtistType`(`id`, `Artist_idArtist`, `ArtistType_name`) 
 INSERT INTO `Artist_has_ArtistType`(`id`, `Artist_idArtist`, `ArtistType_name`) VALUES (6, 4, 'Music');
 
 INSERT INTO `Movie`(`idMovie`, `title`, `language`, `dateOfPremiere`, `boxOffice`, `country`, `description`, `pictureUrl`) VALUES (1, 'Titanic', 'English', '1997-11-01', 200000000, 'USA', ' A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.', 'https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_SY1000_CR0,0,671,1000_AL_.jpg');
+INSERT INTO  `29209262_bd2`.`Movie` (
+`idMovie` ,
+`title` ,
+`language` ,
+`dateOfPremiere` ,
+`boxOffice` ,
+`country` ,
+`description` ,
+`pictureUrl`
+)
+VALUES (
+'2',  'Deadpool',  'English',  '2016-01-21',  '783100000',  'USA', 'A fast-talking mercenary with a morbid sense of humor is subjected to a rogue experiment that leaves him with accelerated healing powers and a quest for revenge.', 'https://ssl-gfx.filmweb.pl/po/46/75/514675/7716978.2.jpg'
+);
+
+
 
 INSERT INTO `UserType`(`name`) VALUES ('Administrator');
 INSERT INTO `UserType`(`name`) VALUES ('Editor');
@@ -86,6 +101,27 @@ INSERT INTO `TvProgram`(`idTvProgram`, `station`, `dateTime`, `Movie_idMovie`) V
 
 INSERT INTO `Movie_has_Genre`(`Movie_idMovie`, `Genre_name`) VALUES (1, 'Romance');
 INSERT INTO `Movie_has_Genre`(`Movie_idMovie`, `Genre_name`) VALUES (1, 'Drama');
+INSERT INTO  `29209262_bd2`.`Movie_has_Genre` (
+`Movie_idMovie` ,
+`Genre_name`
+)
+VALUES (
+'2',  'Comedy'
+);
+INSERT INTO  `29209262_bd2`.`Movie_has_Genre` (
+`Movie_idMovie` ,
+`Genre_name`
+)
+VALUES (
+'2',  'Action'
+);
+INSERT INTO  `29209262_bd2`.`Movie_has_Genre` (
+`Movie_idMovie` ,
+`Genre_name`
+)
+VALUES (
+'2',  'Adventure'
+);
 
 INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user1', 1, 7);
 INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user2', 1, 4);
