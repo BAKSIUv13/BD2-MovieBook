@@ -36,6 +36,7 @@
       <mapping class="pl.moviebook.dbEntities.Prize"/>
       <mapping class="pl.moviebook.dbEntities.Review"/>
       <mapping class="pl.moviebook.dbEntities.TvProgram"/>
-      
+      <mapping class="pl.moviebook.dbEntities.ToWatch"/>
+
    </session-factory>
 </hibernate-configuration>
