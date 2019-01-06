@@ -37,5 +37,7 @@
       <mapping class="pl.moviebook.dbEntities.Review"/>
       <mapping class="pl.moviebook.dbEntities.TvProgram"/>
       
+
+      
    </session-factory>
 </hibernate-configuration>
