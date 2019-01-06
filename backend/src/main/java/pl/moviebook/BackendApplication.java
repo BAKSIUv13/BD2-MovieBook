@@ -33,6 +33,8 @@ public class BackendApplication {
 	public List<Artist> getAllArtists() {
 		Session session = sessionFactory.openSession();
 
+		// HQL syntax - createQuery
+		// SQL syntax - createSQLQery
 		Query<Artist> query = session.createQuery("from Artist");
 		List<Artist> list = query.list();
 		
@@ -226,9 +228,11 @@ public class BackendApplication {
 	@CrossOrigin
 	@RequestMapping("/changeRating/{User_login}/{Movie_idMovie}/{rate}")
 	@ResponseBody
-	public String register(@PathVariable("User_login") String User_login, 
-						   @PathVariable("Movie_idMovie") int Movie_idMovie,
-						   @PathVariable("rate") int rate) {
+	public String changeRating(
+		@PathVariable("User_login") String User_login, 
+		@PathVariable("Movie_idMovie") int Movie_idMovie,
+		@PathVariable("rate") int rate) {
+		
 		Session session = sessionFactory.openSession();
 
 		session.beginTransaction();
@@ -249,6 +253,38 @@ public class BackendApplication {
 		session.close();
 		
 		return "Successful";
+	}
+
+	@CrossOrigin
+	@RequestMapping("/allMoviesOfTheGenre/{name}")
+	@ResponseBody
+	public List<MovieBasicInformations> getAllMoviesOfTheGenre(
+		@PathVariable("name") String name) {
+		
+		Session session = sessionFactory.openSession();
+	
+		Query query = session.createQuery(
+			"select movie " + 
+			"from Movie as movie, Movie_has_Genre as movie_has_Genre " + 
+			"where movie.idMovie = movie_has_Genre.Movie_idMovie " + 
+			"and movie_has_Genre.Genre_name = :name"
+		).setParameter("name", name);
+
+		List<Movie> movies = query.list();
+
+		List<MovieBasicInformations> basicMovies = new ArrayList<>();
+		for(Movie movie : movies) {
+			
+			List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+			
+			MovieBasicInformations movieLite = new MovieBasicInformations(
+				movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
+				movie.getPictureUrl(), genres);
+			basicMovies.add(movieLite);
+		}
+		
+		session.close();
+		return basicMovies;
 	}
 
 	public static void main(String[] args) {

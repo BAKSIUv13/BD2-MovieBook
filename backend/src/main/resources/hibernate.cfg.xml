@@ -37,6 +37,7 @@
       <mapping class="pl.moviebook.dbEntities.Review"/>
       <mapping class="pl.moviebook.dbEntities.TvProgram"/>
       <mapping class="pl.moviebook.dbEntities.Rating"/>
+      <mapping class="pl.moviebook.dbEntities.Movie_has_Genre"/>
 
       
    </session-factory>
