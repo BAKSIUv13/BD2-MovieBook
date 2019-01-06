@@ -27,6 +27,77 @@ import pl.moviebook.otherEntities.*;
 public class BackendApplication {
 	
 	SessionFactory sessionFactory = Connection.getSessionFactory();
+
+	@CrossOrigin
+	@RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
+	@ResponseBody
+	public String addToWatch(@PathVariable("Movie_idMovie") int idMovie,
+						@PathVariable("User_login") String User_login) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		ToWatch towatch = new ToWatch();
+		towatch.setIdMovie(idMovie);
+		towatch.setLogin(User_login);
+		session.save(towatch);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/removeToWatch/{Movie_idMovie}/{User_login}")
+	@ResponseBody
+	public String removeToWatch(@PathVariable("Movie_idMovie") int idMovie,
+						@PathVariable("User_login") String User_login) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		ToWatch towatch = new ToWatch();
+		towatch.setIdMovie(idMovie);
+		towatch.setLogin(User_login);
+		session.delete(towatch);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
+	}
+
+	@CrossOrigin
+	@RequestMapping("/addReview/{Movie_idMovie}/{User_login}/{content}")
+	@ResponseBody
+	public String addReview(@PathVariable("Movie_idMovie") int idMovie,
+						@PathVariable("User_login") String User_login,
+						@PathVariable("content") String content) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Review review = new Review();
+		review.setIdMovie(idMovie);
+		review.setLogin(User_login);
+		review.setContent(content);
+		session.save(review);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
+	}
 	
 	@RequestMapping("/allArtists")
 	@ResponseBody
