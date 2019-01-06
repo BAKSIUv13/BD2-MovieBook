@@ -36,7 +36,7 @@
       <mapping class="pl.moviebook.dbEntities.Prize"/>
       <mapping class="pl.moviebook.dbEntities.Review"/>
       <mapping class="pl.moviebook.dbEntities.TvProgram"/>
-      
+      <mapping class="pl.moviebook.dbEntities.Rating"/>
 
       
    </session-factory>

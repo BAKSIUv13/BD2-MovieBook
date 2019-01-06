@@ -222,9 +222,9 @@ public class BackendApplication {
 		
 		return "Successful";
 	}
-/*
+
 	@CrossOrigin
-	@RequestMapping("/changeRating/{User_login}/{Movie_idMovie}/{rate}/")
+	@RequestMapping("/changeRating/{User_login}/{Movie_idMovie}/{rate}")
 	@ResponseBody
 	public String register(@PathVariable("User_login") String User_login, 
 						   @PathVariable("Movie_idMovie") int Movie_idMovie,
@@ -245,13 +245,12 @@ public class BackendApplication {
 			session.close();
 			return "Unsuccessful";
 		}
+		
 		session.close();
 		
 		return "Successful";
 	}
 
-*/
-	
 	public static void main(String[] args) {
 		
 		SpringApplication.run(BackendApplication.class, args);
