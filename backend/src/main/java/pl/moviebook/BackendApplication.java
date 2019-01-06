@@ -9,22 +9,17 @@ import java.util.List;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import pl.moviebook.dbEntities.*;
-import pl.moviebook.otherEntities.ArtistInFilmBasicInformations;
-import pl.moviebook.otherEntities.MovieBasicInformations;
-import pl.moviebook.otherEntities.MovieFullInformations;
-import pl.moviebook.otherEntities.ReviewWithLikes;
-import pl.moviebook.otherEntities.ShowWithCinema;
-import pl.moviebook.otherEntities.TvProgramBasicInformations;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import pl.moviebook.dbEntities.*;
+import pl.moviebook.otherEntities.*;
 
 @CrossOrigin
 @Controller
@@ -109,6 +104,8 @@ public class BackendApplication {
 	public List<Artist> getAllArtists() {
 		Session session = sessionFactory.openSession();
 
+		// HQL syntax - createQuery
+		// SQL syntax - createSQLQery
 		Query<Artist> query = session.createQuery("from Artist");
 		List<Artist> list = query.list();
 		
@@ -125,8 +122,10 @@ public class BackendApplication {
 		
 		Session session = sessionFactory.openSession();
 		
-		Query query = session.createSQLQuery("SELECT UserType_name FROM User WHERE login = :login AND password = :password")
-				.setParameter("login", login)
+		Query query = session.createSQLQuery(
+			"SELECT UserType_name FROM User" + 
+			"WHERE login = :login AND password = :password")
+			.setParameter("login", login)
 				.setParameter("password", password);
 		
 		String userTypeResult;
@@ -168,7 +167,9 @@ public class BackendApplication {
 			
 			List<String> genres = getMovieGenres(movie.getIdMovie(), session);
 			
-			MovieBasicInformations movieLite = new MovieBasicInformations(movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), movie.getPictureUrl(), genres);
+			MovieBasicInformations movieLite = new MovieBasicInformations(
+				movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
+				movie.getPictureUrl(), genres);
 			liteResult.add(movieLite);
 		}
 		
@@ -177,8 +178,9 @@ public class BackendApplication {
 	}
 	
 	private List<String> getMovieGenres(int movieId, Session session) {
-		Query querySQL = session.createSQLQuery("SELECT Movie_has_Genre.Genre_name FROM Movie_has_Genre "
-				+ "INNER JOIN Movie ON Movie_has_Genre.Movie_idMovie = Movie.idMovie WHERE Movie.idMovie = :id")
+		Query querySQL = session.createSQLQuery(
+			"SELECT Movie_has_Genre.Genre_name FROM Movie_has_Genre "
+		  + "INNER JOIN Movie ON Movie_has_Genre.Movie_idMovie = Movie.idMovie WHERE Movie.idMovie = :id")
 				.setParameter("id", movieId);
 		
 		return querySQL.list();
@@ -290,11 +292,72 @@ public class BackendApplication {
 			return "Unsuccessful";
 		}
 		session.close();
+		
 		return "Successful";
-		
-		
 	}
+
+	@CrossOrigin
+	@RequestMapping("/changeRating/{User_login}/{Movie_idMovie}/{rate}")
+	@ResponseBody
+	public String changeRating(
+		@PathVariable("User_login") String User_login, 
+		@PathVariable("Movie_idMovie") int Movie_idMovie,
+		@PathVariable("rate") int rate) {
+		
+		Session session = sessionFactory.openSession();
+
+		session.beginTransaction();
+
+		Rating rating = new Rating();
+		rating.setUser_login(User_login);
+		rating.setMovie_idMovie(Movie_idMovie);
+		rating.setRate(rate);
+
+		session.saveOrUpdate(rating);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		
+		session.close();
+		
+		return "Successful";
+	}
+
+	@CrossOrigin
+	@RequestMapping("/allMoviesOfTheGenre/{name}")
+	@ResponseBody
+	public List<MovieBasicInformations> getAllMoviesOfTheGenre(
+		@PathVariable("name") String name) {
+		
+		Session session = sessionFactory.openSession();
 	
+		Query query = session.createQuery(
+			"select movie " + 
+			"from Movie as movie, Movie_has_Genre as movie_has_Genre " + 
+			"where movie.idMovie = movie_has_Genre.Movie_idMovie " + 
+			"and movie_has_Genre.Genre_name = :name"
+		).setParameter("name", name);
+
+		List<Movie> movies = query.list();
+
+		List<MovieBasicInformations> basicMovies = new ArrayList<>();
+		for(Movie movie : movies) {
+			
+			List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+			
+			MovieBasicInformations movieLite = new MovieBasicInformations(
+				movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
+				movie.getPictureUrl(), genres);
+			basicMovies.add(movieLite);
+		}
+		
+		session.close();
+		return basicMovies;
+	}
+
 	public static void main(String[] args) {
 		
 		SpringApplication.run(BackendApplication.class, args);

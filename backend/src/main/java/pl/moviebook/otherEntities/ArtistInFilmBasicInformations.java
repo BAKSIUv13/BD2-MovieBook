@@ -55,7 +55,4 @@ public class ArtistInFilmBasicInformations {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	
-	
 }
