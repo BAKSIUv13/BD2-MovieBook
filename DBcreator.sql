@@ -265,7 +265,7 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `MovieBookDataBase`.`Issue` (
   `idIssue` INT(11) NOT NULL AUTO_INCREMENT,
   `dateTime` DATETIME NOT NULL,
-  `desprition` VARCHAR(256) NOT NULL,
+  `description` VARCHAR(256) NOT NULL,
   `Movie_idMovie` INT(11) NOT NULL,
   `User_login` VARCHAR(32) NOT NULL,
   PRIMARY KEY (`idIssue`),

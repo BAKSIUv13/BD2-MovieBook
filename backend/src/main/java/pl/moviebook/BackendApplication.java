@@ -21,12 +21,41 @@ import org.springframework.web.bind.annotation.PathVariable;
 import pl.moviebook.dbEntities.*;
 import pl.moviebook.otherEntities.*;
 
+import java.sql.Date;
+
 @CrossOrigin
 @Controller
 @SpringBootApplication
 public class BackendApplication {
 	
 	SessionFactory sessionFactory = Connection.getSessionFactory();
+
+	@CrossOrigin
+	@RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateTime}/{description}")
+	@ResponseBody
+	public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
+						@PathVariable("User_login") String User_login,
+						@PathVariable("dateTime") Date issueDateTime,
+						@PathVariable("description") String description) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Issue issue = new Issue();
+		issue.setIdMovie(idMovie);
+		issue.setLogin(User_login);
+		issue.setIssueDateTime(issueDateTime);
+		issue.setDescription(description);
+		session.save(issue);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful";
+		}
+		session.close();
+		return "Successful";
+		
+		
+	}
 
 	@CrossOrigin
 	@RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")

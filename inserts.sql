@@ -128,8 +128,8 @@ INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user2', 1, 
 INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user3', 1, 6);
 INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user4', 1, 10);
 
-INSERT INTO `Issue`(`idIssue`, `dateTime`, `desprition`, `Movie_idMovie`, `User_login`) VALUES (1, '2018-12-11 10:00', 'lorem ipsum lorem ipsum', 1, 'user1');
-INSERT INTO `Issue`(`idIssue`, `dateTime`, `desprition`, `Movie_idMovie`, `User_login`) VALUES (2, '2018-12-17 17:45', 'ipsum ipsum lorem lorem', 1, 'user4');
+INSERT INTO `Issue`(`idIssue`, `dateTime`, `description`, `Movie_idMovie`, `User_login`) VALUES (1, '2018-12-11 10:00', 'lorem ipsum lorem ipsum', 1, 'user1');
+INSERT INTO `Issue`(`idIssue`, `dateTime`, `description`, `Movie_idMovie`, `User_login`) VALUES (2, '2018-12-17 17:45', 'ipsum ipsum lorem lorem', 1, 'user4');
 
 INSERT INTO `ToWatch`(`User_login`, `Movie_idMovie`) VALUES ('user5', 1);
 
