@@ -15,7 +15,7 @@
       <!-- Assume test is the database name -->
       
       <property name = "hibernate.connection.url">
-         jdbc:mysql://serwer1847553.home.pl/29209262_bd2
+         jdbc:mysql://serwer1847553.home.pl/29209262_bd2?autoReconnect=true
       </property>
       
       <!-- TODO username and password in ENV -->
