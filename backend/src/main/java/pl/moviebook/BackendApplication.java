@@ -135,7 +135,7 @@ public class BackendApplication {
 		Session session = sessionFactory.openSession();
 		
 		Query query = session.createSQLQuery(
-			"SELECT UserType_name FROM User" + 
+			"SELECT UserType_name FROM User " + 
 			"WHERE login = :login AND password = :password")
 			.setParameter("login", login)
 				.setParameter("password", password);
