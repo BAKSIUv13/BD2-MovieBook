@@ -2,8 +2,10 @@ package pl.moviebook;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.hibernate.query.Query;
@@ -27,6 +29,16 @@ import pl.moviebook.otherEntities.*;
 public class BackendApplication {
 	
 	SessionFactory sessionFactory = Connection.getSessionFactory();
+
+	private Date getDateRiGCZFormat(int year, int month, int day)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		return new Date(cal.getTime().getTime());
+	}
 
 	@CrossOrigin
 	@RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
@@ -123,7 +135,7 @@ public class BackendApplication {
 		Session session = sessionFactory.openSession();
 		
 		Query query = session.createSQLQuery(
-			"SELECT UserType_name FROM User" + 
+			"SELECT UserType_name FROM User " + 
 			"WHERE login = :login AND password = :password")
 			.setParameter("login", login)
 				.setParameter("password", password);
@@ -357,6 +369,50 @@ public class BackendApplication {
 		session.close();
 		return basicMovies;
 	}
+
+	@CrossOrigin
+	@RequestMapping("/addMovie/{title}/{language}/" +
+					"{dayOfPremiere}/{monthOfPremiere}/{yearOfPremiere}/" +
+					"{boxOffice}/{country}/{description}/{pictureUrl}")
+	@ResponseBody
+	public String addMovie(
+		@PathVariable("title") String title,
+		@PathVariable("language") String language,
+		@PathVariable("dayOfPremiere") int dayOfPremiere,
+		@PathVariable("monthOfPremiere") int monthOfPremiere,
+		@PathVariable("yearOfPremiere") int yearOfPremiere,
+		@PathVariable("boxOffice") int boxOffice,
+		@PathVariable("country") String country,
+		@PathVariable("description") String description,
+		@PathVariable("pictureUrl") String pictureUrl) {
+			
+			Session session = sessionFactory.openSession();
+
+			session.beginTransaction();
+
+			Movie movie = new Movie();
+
+			movie.setTitle(title);
+			movie.setLanguage(language);
+			movie.setDateOfPremiere(getDateRiGCZFormat(yearOfPremiere, 
+				monthOfPremiere, dayOfPremiere));
+			movie.setBoxOffice(boxOffice);
+			movie.setCountry(country);
+			movie.setDescription(description);
+			movie.setPictureUrl(pictureUrl);
+				
+			session.save(movie);
+			try{
+				session.getTransaction().commit();
+			} catch(Exception e) {
+				session.close();
+				return "Unsuccessful";
+			}
+			
+			session.close();
+			
+			return "Successful";
+		}
 
 	public static void main(String[] args) {
 		
