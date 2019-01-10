@@ -18,16 +18,12 @@ class Header extends Component {
                 </Button>
                 <Typography variant="title" align="center" noWrap className="title">MovieBook</Typography>
                 <LoginContainer />
-                {/* { this.state.showLogIn ? <Button variant="outlined" size="small" onClick={ this.handleClickOpenLogin }>Log in</Button> : null}
-                { this.state.showLogOut ? <Button variant="outlined" size="small" onClick={this.handleClickLogOut}>Log out</Button> : null} */}
             </Toolbar>      
             <Toolbar variant="dense">
                 <Button size="small" component={Link} to="/films">films</Button>
                 <Button size="small" component={Link} to="/artists">artists</Button>
-                {/* {this.state.showAccoutOptions ? <Button size="small" component={Link} to="/account">account</Button> : null}
-                {this.state.showAdministrator ? <Button size="small" component={Link} to="/adminTools">tools</Button> : null}
-                {this.state.showSalesman ? <Button size="small" component={Link} to="/salesmanTools">tools</Button> : null}
-                {this.state.showEditor ? <Button size="small" component={Link} to="/editorTools">tools</Button> : null} */}
+                <Button size="small" component={Link} to="/cinemas">cinemas</Button>
+
             </Toolbar>
         </div>
         );
