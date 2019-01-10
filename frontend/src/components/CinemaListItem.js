@@ -9,7 +9,6 @@ const CinemaListItem = (props) => {
             <div className="moviePreview">
                 <h2 id="title">{props.cinema.name} {props.cinema.city}</h2>
             </div>
-
         </div>
     );
 }
