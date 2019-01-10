@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -30,19 +31,47 @@ public class BackendApplication {
 	
 	SessionFactory sessionFactory = Connection.getSessionFactory();
 
+	private Date getDateRiGCZFormat(int year, int month, int day)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		return new Date(cal.getTime().getTime());
+	}
+	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+
+		return new Date(cal.getTime().getTime());
+	}
+
 	@CrossOrigin
-	@RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateTime}/{description}")
+	@RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/{dateMonth}/{dateDay}/{timeHour}/{timeMinute}/{timeSecond}/{description}")
 	@ResponseBody
 	public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
 						@PathVariable("User_login") String User_login,
-						@PathVariable("dateTime") Date issueDateTime,
+						@PathVariable("dateYear") int dateYear,
+						@PathVariable("dateMonth") int dateMonth,
+						@PathVariable("dateDay") int dateDay,
+						@PathVariable("timeHour") int timeHour,
+						@PathVariable("timeMinute") int timeMinute,
+						@PathVariable("timeSecond") int timeSecond,
 						@PathVariable("description") String description) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		Issue issue = new Issue();
 		issue.setIdMovie(idMovie);
 		issue.setLogin(User_login);
-		issue.setIssueDateTime(issueDateTime);
+		issue.setIssueDateTime(getDateTimeRiGCZFormat(dateYear, dateMonth, dateDay, timeHour, timeMinute, timeSecond));
 		issue.setDescription(description);
 		session.save(issue);
 		try{
