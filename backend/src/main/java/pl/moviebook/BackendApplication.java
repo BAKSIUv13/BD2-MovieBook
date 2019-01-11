@@ -167,6 +167,40 @@ public class BackendApplication {
         return list;
     }
     
+	@RequestMapping("/getShows/{idCinema}")
+	@ResponseBody
+	public List<FilmInCinema> getFilmInCinema(@PathVariable("idCinema") int idCinema) {
+		Session session = sessionFactory.openSession();
+		
+		List<FilmInCinema> filmsInCinema = new ArrayList<>();
+		Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
+				+ "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id "
+				+ "GROUP BY `Show`.dateTime ASC")
+				.setParameter("id", idCinema);
+		List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
+		
+		for(Object[] show : showsSQLResult) {
+			filmsInCinema.add(new FilmInCinema((((Timestamp) show[0]).getTime()), (String) show[1], (int) show[2]));
+		}
+		
+		return filmsInCinema;
+	}
+	
+	@RequestMapping("/getCinemaName/{idCinema}")
+	@ResponseBody
+	public String getCinemaName(@PathVariable("idCinema") int idCinema) {
+		Session session = sessionFactory.openSession();
+		
+		Query querySQL = session.createSQLQuery("SELECT Cinema.name, Cinema.city FROM Cinema WHERE Cinema.idCinema = :id")
+				.setParameter("id", idCinema);
+		
+		Object[] cinemaSQLResult = (Object[]) querySQL.getSingleResult();
+		
+		return (String) cinemaSQLResult[0] + " " + (String) cinemaSQLResult[1];
+		
+	}
+	
+    
     @RequestMapping("/allMovies")
     @ResponseBody
     public List<MovieBasicInformations> getAllMovies() {
