@@ -153,6 +153,39 @@ public class BackendApplication {
         
         return userTypeResult;
     }
+    
+    @RequestMapping("/allStations")
+    @ResponseBody
+    public List<Station> getAllStations() {
+        Session session = sessionFactory.openSession();
+
+        Query<Station> query = session.createQuery("from Station");
+        List<Station> list = query.list();
+        
+        session.close();
+
+        return list;
+    }
+    
+    @CrossOrigin
+	@RequestMapping("/getTransmitions/{station}")
+	@ResponseBody
+	public List<TransmitionOnStation> getTransmitionOnStation(@PathVariable("station") String station) {
+		Session session = sessionFactory.openSession();
+		
+		List<TransmitionOnStation> transmitions = new ArrayList<>();
+		Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
+				+ "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id "
+				+ "GROUP BY TvProgram.dateTime ASC")
+				.setParameter("id", station);
+		List<Object[]> transmitionsSQLResult = (List<Object[]>) querySQL.list();
+		
+		for(Object[] transmition : transmitionsSQLResult) {
+			transmitions.add(new TransmitionOnStation((((Timestamp) transmition[0]).getTime()), (String) transmition[1], (int) transmition[2]));
+		}
+		
+		return transmitions;
+	}
 
     @RequestMapping("/allCinemas")
     @ResponseBody
