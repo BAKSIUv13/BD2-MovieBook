@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS `29209262_bd2`.`Like` (
     REFERENCES `29209262_bd2`.`User` (`login`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB; 
 
 
 -- -----------------------------------------------------
