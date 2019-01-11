@@ -39,6 +39,8 @@
       <mapping class="pl.moviebook.dbEntities.Rating"/>
       <mapping class="pl.moviebook.dbEntities.Movie_has_Genre"/>
       <mapping class="pl.moviebook.dbEntities.ToWatch"/>
+      <mapping class="pl.moviebook.dbEntities.Like"/>
+      
 
    </session-factory>
 </hibernate-configuration>
