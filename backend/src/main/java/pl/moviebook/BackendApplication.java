@@ -292,17 +292,17 @@ public class BackendApplication {
         List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
         
         for(Object[] show : showsSQLResult) {
-            showsWithCinema.add(new ShowWithCinema(((Timestamp) show[0]), (String) show[1], (String) show[2]));
+            showsWithCinema.add(new ShowWithCinema(((Timestamp) show[0]).getTime(), (String) show[1], (String) show[2]));
         }
         
         List<TvProgramBasicInformations> transmitions = new ArrayList<>();
-        querySQL = session.createSQLQuery("SELECT TvProgram.station, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
+        querySQL = session.createSQLQuery("SELECT TvProgram.Station_name, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
                 .setParameter("id", movie.getIdMovie());
         
         List<Object[]> transmitionsSQLResult = querySQL.list();
         
         for(Object[] transmition : transmitionsSQLResult) {
-            transmitions.add(new TvProgramBasicInformations((String) transmition[0], (Timestamp) transmition[1]));
+            transmitions.add(new TvProgramBasicInformations((String) transmition[0], ((Timestamp) transmition[1]).getTime()));
         }
         
         
