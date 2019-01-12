@@ -153,6 +153,39 @@ public class BackendApplication {
         
         return userTypeResult;
     }
+    
+    @RequestMapping("/allStations")
+    @ResponseBody
+    public List<Station> getAllStations() {
+        Session session = sessionFactory.openSession();
+
+        Query<Station> query = session.createQuery("from Station");
+        List<Station> list = query.list();
+        
+        session.close();
+
+        return list;
+    }
+    
+    @CrossOrigin
+	@RequestMapping("/getTransmitions/{station}")
+	@ResponseBody
+	public List<TransmitionOnStation> getTransmitionOnStation(@PathVariable("station") String station) {
+		Session session = sessionFactory.openSession();
+		
+		List<TransmitionOnStation> transmitions = new ArrayList<>();
+		Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
+				+ "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id "
+				+ "GROUP BY TvProgram.dateTime ASC")
+				.setParameter("id", station);
+		List<Object[]> transmitionsSQLResult = (List<Object[]>) querySQL.list();
+		
+		for(Object[] transmition : transmitionsSQLResult) {
+			transmitions.add(new TransmitionOnStation((((Timestamp) transmition[0]).getTime()), (String) transmition[1], (int) transmition[2]));
+		}
+		
+		return transmitions;
+	}
 
     @RequestMapping("/allCinemas")
     @ResponseBody
@@ -166,6 +199,40 @@ public class BackendApplication {
 
         return list;
     }
+    
+	@RequestMapping("/getShows/{idCinema}")
+	@ResponseBody
+	public List<FilmInCinema> getFilmInCinema(@PathVariable("idCinema") int idCinema) {
+		Session session = sessionFactory.openSession();
+		
+		List<FilmInCinema> filmsInCinema = new ArrayList<>();
+		Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
+				+ "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id "
+				+ "GROUP BY `Show`.dateTime ASC")
+				.setParameter("id", idCinema);
+		List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
+		
+		for(Object[] show : showsSQLResult) {
+			filmsInCinema.add(new FilmInCinema((((Timestamp) show[0]).getTime()), (String) show[1], (int) show[2]));
+		}
+		
+		return filmsInCinema;
+	}
+	
+	@RequestMapping("/getCinemaName/{idCinema}")
+	@ResponseBody
+	public String getCinemaName(@PathVariable("idCinema") int idCinema) {
+		Session session = sessionFactory.openSession();
+		
+		Query querySQL = session.createSQLQuery("SELECT Cinema.name, Cinema.city FROM Cinema WHERE Cinema.idCinema = :id")
+				.setParameter("id", idCinema);
+		
+		Object[] cinemaSQLResult = (Object[]) querySQL.getSingleResult();
+		
+		return (String) cinemaSQLResult[0] + " " + (String) cinemaSQLResult[1];
+		
+	}
+	
     
     @RequestMapping("/allMovies")
     @ResponseBody
@@ -258,17 +325,17 @@ public class BackendApplication {
         List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
         
         for(Object[] show : showsSQLResult) {
-            showsWithCinema.add(new ShowWithCinema(((Timestamp) show[0]), (String) show[1], (String) show[2]));
+            showsWithCinema.add(new ShowWithCinema(((Timestamp) show[0]).getTime(), (String) show[1], (String) show[2]));
         }
         
         List<TvProgramBasicInformations> transmitions = new ArrayList<>();
-        querySQL = session.createSQLQuery("SELECT TvProgram.station, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
+        querySQL = session.createSQLQuery("SELECT TvProgram.Station_name, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
                 .setParameter("id", movie.getIdMovie());
         
         List<Object[]> transmitionsSQLResult = querySQL.list();
         
         for(Object[] transmition : transmitionsSQLResult) {
-            transmitions.add(new TvProgramBasicInformations((String) transmition[0], (Timestamp) transmition[1]));
+            transmitions.add(new TvProgramBasicInformations((String) transmition[0], ((Timestamp) transmition[1]).getTime()));
         }
         
         

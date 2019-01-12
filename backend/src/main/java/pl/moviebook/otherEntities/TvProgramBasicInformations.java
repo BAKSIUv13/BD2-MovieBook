@@ -5,9 +5,9 @@ import java.sql.Timestamp;
 public class TvProgramBasicInformations {
 
 	String station;
-	Timestamp dateTime;
+	long dateTime;
 	
-	public TvProgramBasicInformations(String station, Timestamp dateTime) {
+	public TvProgramBasicInformations(String station, long dateTime) {
 		this.station = station;
 		this.dateTime = dateTime;
 	}
@@ -20,11 +20,11 @@ public class TvProgramBasicInformations {
 		this.station = station;
 	}
 
-	public Timestamp getDateTime() {
+	public long getDateTime() {
 		return dateTime;
 	}
 
-	public void setDateTime(Timestamp dateTime) {
+	public void setDateTime(long dateTime) {
 		this.dateTime = dateTime;
 	}	
 	

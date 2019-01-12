@@ -95,8 +95,11 @@ INSERT INTO `Prize`(`name`, `whatFor`, `date`, `Artist_idArtist`, `Movie_idMovie
 INSERT INTO `Show`(`dateTime`, `Cinema_idCinema`, `Movie_idMovie`) VALUES ('2019-02-03 10:00', 1,1);
 INSERT INTO `Show`(`dateTime`, `Cinema_idCinema`, `Movie_idMovie`) VALUES ('2019-02-10 12:00', 7,1);
 
-INSERT INTO `TvProgram`(`station`, `dateTime`, `Movie_idMovie`) VALUES ('TVN', '2019-02-03 10:00',1 );
-INSERT INTO `TvProgram`(`station`, `dateTime`, `Movie_idMovie`) VALUES ('Polsat', '2019-02-10 12:30', 1);
+INSERT INTO `Station`(`name`) VALUES ('TVN');
+INSERT INTO `Station`(`name`) VALUES ('Polsat');
+
+INSERT INTO `TvProgram`(`Station_name`, `dateTime`, `Movie_idMovie`) VALUES ('TVN', '2019-02-03 10:00',1 );
+INSERT INTO `TvProgram`(`Station_name`, `dateTime`, `Movie_idMovie`) VALUES ('Polsat', '2019-02-10 12:30', 1);
 
 INSERT INTO `Movie_has_Genre`(`Movie_idMovie`, `Genre_name`) VALUES (1, 'Romance');
 INSERT INTO `Movie_has_Genre`(`Movie_idMovie`, `Genre_name`) VALUES (1, 'Drama');
