@@ -510,6 +510,34 @@ public class BackendApplication {
             return "Successful";
         }
 
+        @CrossOrigin
+        @RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
+        @ResponseBody
+        public String removeLikeToReview(
+            @PathVariable("Review_idReview") int Review_idReview,
+            @PathVariable("User_login") String User_login) {
+            
+            Session session = sessionFactory.openSession();
+                
+            session.beginTransaction();
+            
+            Like like = new Like();
+            like.setReview_idReview(Review_idReview);
+            like.setUser_login(User_login);
+    
+            session.remove(like);
+            try{
+                session.getTransaction().commit();
+            } catch(Exception e) {
+                session.close();
+                return "Unsuccessful";
+            }
+            
+            session.close();
+            
+            return "Successful";
+        }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
