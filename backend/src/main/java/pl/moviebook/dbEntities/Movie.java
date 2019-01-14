@@ -14,7 +14,8 @@ public class Movie implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    @Id
+	
+	@Id
     @Column(name="idMovie")
     private int idMovie;
 

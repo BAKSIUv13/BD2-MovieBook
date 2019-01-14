@@ -4,21 +4,21 @@ import java.sql.Timestamp;
 
 public class ShowWithCinema {
 
-	Timestamp dateTime;
+	long dateTime;
 	String cinemaName;
 	String city;
 	
-	public ShowWithCinema(Timestamp dateTime, String cinemaName, String city) {
+	public ShowWithCinema(long dateTime, String cinemaName, String city) {
 		this.dateTime = dateTime;
 		this.cinemaName = cinemaName;
 		this.city = city;
 	}
 
-	public Timestamp getDateTime() {
+	public long getDateTime() {
 		return dateTime;
 	}
 
-	public void setDateTime(Timestamp dateTime) {
+	public void setDateTime(long dateTime) {
 		this.dateTime = dateTime;
 	}
 

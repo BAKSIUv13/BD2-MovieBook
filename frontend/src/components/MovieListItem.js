@@ -1,6 +1,6 @@
 import React  from 'react';
 import { NavLink } from 'react-router-dom'
-import '../css/MovieListItem.css'
+import '../css/ListItem.css'
 
 const MovieListItem = (props) => {
 
@@ -16,6 +16,7 @@ const MovieListItem = (props) => {
                     pathname: '/films/'.concat(movie.idMovie + "/").concat(movie.title),
                     }} className="movieListItem" >
 
+                    
                     <img className="coverage" src={movie.pictureUrl} alt={"coverage for movie " + movie.title}></img>
                    
                     <div className="moviePreview">
