@@ -34,16 +34,6 @@ public class BackendApplication {
     
     SessionFactory sessionFactory = Connection.getSessionFactory();
 
-    private Date getDateRiGCZFormat(int year, int month, int day)
-    {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-
-        return new Date(cal.getTime().getTime());
-    }
-
     @CrossOrigin
     @RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
     @ResponseBody
@@ -539,63 +529,63 @@ public class BackendApplication {
         session.close();
         
         return "Successful";
-        }
+	}
 
-        @CrossOrigin
-        @RequestMapping("/addLikeToReview/{Review_idReview}/{User_login}")
-        @ResponseBody
-        public String addLikeToReview(
-            @PathVariable("Review_idReview") int Review_idReview,
-            @PathVariable("User_login") String User_login) {
-            
-            Session session = sessionFactory.openSession();
-                
-            session.beginTransaction();
-            
-            Like like = new Like();
-            like.setReview_idReview(Review_idReview);
-            like.setUser_login(User_login);
-    
-            session.saveOrUpdate(like);
-            try{
-                session.getTransaction().commit();
-            } catch(Exception e) {
-                session.close();
-                return "Unsuccessful";
-            }
-            
-            session.close();
-            
-            return "Successful";
-        }
+	@CrossOrigin
+	@RequestMapping("/addLikeToReview/{Review_idReview}/{User_login}")
+	@ResponseBody
+	public String addLikeToReview(
+	    @PathVariable("Review_idReview") int Review_idReview,
+	    @PathVariable("User_login") String User_login) {
+	    
+	    Session session = sessionFactory.openSession();
+		
+	    session.beginTransaction();
+	    
+	    Like like = new Like();
+	    like.setReview_idReview(Review_idReview);
+	    like.setUser_login(User_login);
 
-        @CrossOrigin
-        @RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
-        @ResponseBody
-        public String removeLikeToReview(
-            @PathVariable("Review_idReview") int Review_idReview,
-            @PathVariable("User_login") String User_login) {
-            
-            Session session = sessionFactory.openSession();
-                
-            session.beginTransaction();
-            
-            Like like = new Like();
-            like.setReview_idReview(Review_idReview);
-            like.setUser_login(User_login);
-    
-            session.remove(like);
-            try{
-                session.getTransaction().commit();
-            } catch(Exception e) {
-                session.close();
-                return "Unsuccessful";
-            }
-            
-            session.close();
-            
-            return "Successful";
-        }
+	    session.saveOrUpdate(like);
+	    try{
+		session.getTransaction().commit();
+	    } catch(Exception e) {
+		session.close();
+		return "Unsuccessful";
+	    }
+	    
+	    session.close();
+	    
+	    return "Successful";
+	}
+
+	@CrossOrigin
+	@RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
+	@ResponseBody
+	public String removeLikeToReview(
+	    @PathVariable("Review_idReview") int Review_idReview,
+	    @PathVariable("User_login") String User_login) {
+	    
+	    Session session = sessionFactory.openSession();
+		
+	    session.beginTransaction();
+	    
+	    Like like = new Like();
+	    like.setReview_idReview(Review_idReview);
+	    like.setUser_login(User_login);
+
+	    session.remove(like);
+	    try{
+		session.getTransaction().commit();
+	    } catch(Exception e) {
+		session.close();
+		return "Unsuccessful";
+	    }
+	    
+	    session.close();
+	    
+	    return "Successful";
+	}
 
     public static void main(String[] args) {
         
