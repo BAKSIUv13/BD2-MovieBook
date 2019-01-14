@@ -78,7 +78,7 @@ public class BackendApplication {
 			session.getTransaction().commit();
 		} catch(Exception e) {
 			session.close();
-			return "Unsuccessful";
+			return "Unsuccessful<br />" + e.getMessage();
 		}
 		session.close();
 		return "Successful";
