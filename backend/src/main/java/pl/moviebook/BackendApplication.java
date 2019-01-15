@@ -86,6 +86,28 @@ public class BackendApplication {
         
         
     }
+    
+    @CrossOrigin
+    @RequestMapping("/getFilmsToWatch/{login}")
+    @ResponseBody
+    public List<MovieBasicInformations> getFilmsToWatch(@PathVariable("login") String login) {
+    	Session session = sessionFactory.openSession();
+    	Query query = session.createSQLQuery("SELECT ToWatch.Movie_idMovie From ToWatch WHERE ToWatch.User_login = :login")
+    			.setParameter("login", login);
+    	
+    	List<Integer> filmsIds = query.list();
+    	List<MovieBasicInformations> filmsToWatch = new ArrayList<>();
+    	
+    	for(Integer id : filmsIds) {
+    		List<String> genres = getMovieGenres(id, session);
+    		query = session.createSQLQuery("SELECT Movie.title, Movie.dateOfPremiere, Movie.pictureUrl From Movie WHERE Movie.idMovie = :id")
+    				.setParameter("id", id);
+    		Object[] result = (Object[]) query.getSingleResult();
+    		filmsToWatch.add(new MovieBasicInformations(id, (String) result[0], (Date) result[1], (String) result[2], genres));
+    	}
+    	
+    	return filmsToWatch;
+    }
 
     @CrossOrigin
     @RequestMapping("/addReview/{Movie_idMovie}/{User_login}/{content}")
