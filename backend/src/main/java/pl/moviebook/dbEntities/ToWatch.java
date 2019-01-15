@@ -15,25 +15,38 @@ public class ToWatch implements Serializable {
 
 	@Id
 	@Column(name="User_login")
-	private String login;
+	private String User_login;
 	
+	@Id
 	@Column(name="Movie_idMovie")
-	private int idMovie;
+	private int Movie_idMovie;
 
-
-	public String getLogin() {
-		return login;
+	/**
+	 * @return the user_login
+	 */
+	public String getUser_login() {
+		return User_login;
 	}
 
-	public void setLogin(String login) {
-		this.login = login;
+	/**
+	 * @param user_login the user_login to set
+	 */
+	public void setUser_login(String user_login) {
+		User_login = user_login;
 	}
 
-	public int getIdMovie() {
-		return idMovie;
+	/**
+	 * @return the movie_idMovie
+	 */
+	public int getMovie_idMovie() {
+		return Movie_idMovie;
 	}
 
-	public void setIdMovie(int idMovie) {
-		this.idMovie = idMovie;
+	/**
+	 * @param movie_idMovie the movie_idMovie to set
+	 */
+	public void setMovie_idMovie(int movie_idMovie) {
+		Movie_idMovie = movie_idMovie;
 	}
+
 }

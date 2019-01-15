@@ -49,8 +49,8 @@ public class BackendApplication {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         ToWatch towatch = new ToWatch();
-        towatch.setIdMovie(idMovie);
-        towatch.setLogin(User_login);
+        towatch.setMovie_idMovie(idMovie);
+        towatch.setUser_login(User_login);
         session.save(towatch);
         try{
             session.getTransaction().commit();
@@ -72,8 +72,8 @@ public class BackendApplication {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         ToWatch towatch = new ToWatch();
-        towatch.setIdMovie(idMovie);
-        towatch.setLogin(User_login);
+        towatch.setMovie_idMovie(idMovie);
+        towatch.setUser_login(User_login);
         session.delete(towatch);
         try{
             session.getTransaction().commit();
@@ -536,6 +536,39 @@ public class BackendApplication {
             session.close();
             
             return "Successful";
+        }
+
+        @CrossOrigin
+        @RequestMapping("/getToWatchList/{User_login}")
+        @ResponseBody
+        public List<MovieBasicInformations> getToWatchList(
+            @PathVariable("User_login") String User_login) {
+            
+            Session session = sessionFactory.openSession();
+        
+                
+            Query query = session.createQuery(
+                "select movie " + 
+                "from Movie as movie, ToWatch as toWatch " + 
+                "where :User_login = toWatch.User_login " + 
+                "and movie.idMovie = toWatch.Movie_idMovie "
+            ).setParameter("User_login", User_login);
+    
+            List<Movie> movies = query.list();
+    
+            List<MovieBasicInformations> basicMovies = new ArrayList<>();
+            for(Movie movie : movies) {
+                
+                List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+                
+                MovieBasicInformations movieLite = new MovieBasicInformations(
+                    movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
+                    movie.getPictureUrl(), genres);
+                basicMovies.add(movieLite);
+            }
+            
+            session.close();
+            return basicMovies;
         }
 
     public static void main(String[] args) {
