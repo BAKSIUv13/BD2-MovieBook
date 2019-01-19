@@ -44,6 +44,7 @@
       <mapping class="pl.moviebook.dbEntities.Issue"/>
       <mapping class="pl.moviebook.dbEntities.Like"/>
       <mapping class="pl.moviebook.dbEntities.Station"/>
+      <mapping class="pl.moviebook.dbEntities.Show"/>
       
 
    </session-factory>

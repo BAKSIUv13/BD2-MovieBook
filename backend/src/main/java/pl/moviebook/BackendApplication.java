@@ -718,7 +718,9 @@ public class BackendApplication {
     @CrossOrigin
     @RequestMapping("/removeReview/{idReview}")
     @ResponseBody
-    public String addReview(@PathVariable("idReview") int idReview){
+    public String addReview(
+        @PathVariable("idReview") int idReview){
+        
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         
@@ -735,6 +737,70 @@ public class BackendApplication {
         
         return "Successful";
 
+    }
+
+    @CrossOrigin
+    @RequestMapping("/updateShow/{idShow}/{day}/{month}/{year}/"
+                    + "{Cinema_idCinema}/{Movie_idMovie}")
+    @ResponseBody
+    public String updateShow(
+        @PathVariable("idShow") int idShow,
+        @PathVariable("day") int day,
+        @PathVariable("month") int month,
+        @PathVariable("year") int year,
+        @PathVariable("Cinema_idCinema") int Cinema_idCinema,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Show show = new Show();
+        show.setIdShow(idShow);
+        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        show.setCinema_idCinema(Cinema_idCinema);
+        show.setMovie_idMovie(Movie_idMovie);
+
+        session.saveOrUpdate(show);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
+    @CrossOrigin
+    @RequestMapping("/addShow/{day}/{month}/{year}/"
+                    + "{Cinema_idCinema}/{Movie_idMovie}")
+    @ResponseBody
+    public String addShow(
+        @PathVariable("day") int day,
+        @PathVariable("month") int month,
+        @PathVariable("year") int year,
+        @PathVariable("Cinema_idCinema") int Cinema_idCinema,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Show show = new Show();
+        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        show.setCinema_idCinema(Cinema_idCinema);
+        show.setMovie_idMovie(Movie_idMovie);
+
+        session.save(show);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
     }
 
     public static void main(String[] args) {
