@@ -328,7 +328,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `MovieBookDataBase`.`Issue` (
   `idIssue` INT NOT NULL AUTO_INCREMENT,
   `dateTime` DATETIME NOT NULL,
-  `desprition` VARCHAR(256) NOT NULL,
+  `description` VARCHAR(256) NOT NULL,
   `Movie_idMovie` INT NOT NULL,
   `User_login` VARCHAR(32) NOT NULL,
   PRIMARY KEY (`idIssue`),
