@@ -2,6 +2,7 @@ package pl.moviebook.otherEntities;
 
 public class BasicArtist {
 
+	private int id;
     private String name;
     private String surname;
     private String pictureUrl;
@@ -37,15 +38,23 @@ public class BasicArtist {
     /**
      * @return the photoUrl
      */
-    public String getPhotoUrl() {
+    public String getPictureUrl() {
         return pictureUrl;
     }
 
     /**
      * @param photoUrl the pictureUrl to set
      */
-    public void setPhotoUrl(String pictureUrl) {
+    public void setPictureUrl(String pictureUrl) {
         this.pictureUrl = pictureUrl;
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 }
