@@ -1,6 +1,7 @@
 package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,7 @@ public class Artist implements Serializable {
 
 	@Id
 	@Column(name="idArtist")
-	private int id;
+	private int idArtist;
 	
 	@Column(name="name")
 	private String name;
@@ -27,17 +28,17 @@ public class Artist implements Serializable {
 	private String origin;
 	
 	@Column(name="birthDate")
-	private String date;
+	private Date date;
 
 	@Column(name="pictureUrl")
 	private String pictureUrl;
 
 	public int getId() {
-		return id;
+		return idArtist;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setIdArtist(int id) {
+		this.idArtist = id;
 	}
 
 	public String getName() {
@@ -64,11 +65,11 @@ public class Artist implements Serializable {
 		this.origin = origin;
 	}
 
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 

@@ -32,6 +32,29 @@ public class BackendApplication {
 
     SessionFactory sessionFactory = Connection.getSessionFactory();
 
+    private Date getDateRiGCZFormat(int year, int month, int day)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		return new Date(cal.getTime().getTime());
+	}
+	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+
+		return new Date(cal.getTime().getTime());
+	}
+
     @CrossOrigin
     @RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
     @ResponseBody
@@ -75,29 +98,6 @@ public class BackendApplication {
 
 
     }
-
-	private Date getDateRiGCZFormat(int year, int month, int day)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
-
-		return new Date(cal.getTime().getTime());
-	}
-	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
-
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		cal.set(Calendar.SECOND, second);
-
-		return new Date(cal.getTime().getTime());
-	}
 
     @CrossOrigin
     @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/"
@@ -727,6 +727,222 @@ public class BackendApplication {
     
     }
     
+    // ok
+    @CrossOrigin
+    @RequestMapping("/updateShow/{idShow}/{day}/{month}/{year}/"
+                    + "{Cinema_idCinema}/{Movie_idMovie}")
+    @ResponseBody
+    public String updateShow(
+        @PathVariable("idShow") int idShow,
+        @PathVariable("day") int day,
+        @PathVariable("month") int month,
+        @PathVariable("year") int year,
+        @PathVariable("Cinema_idCinema") int Cinema_idCinema,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Show show = new Show();
+        show.setIdShow(idShow);
+        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        show.setCinema_idCinema(Cinema_idCinema);
+        show.setMovie_idMovie(Movie_idMovie);
+
+        session.saveOrUpdate(show);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+    
+    // not idArtist because of autoincrement
+    @CrossOrigin
+    @RequestMapping("/addArtist/{name}/{surname}/{origin}"
+                    + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
+    @ResponseBody
+    public String addArtist(
+        @PathVariable("name") String name,
+        @PathVariable("surname") String surname,
+        @PathVariable("origin") String origin,
+        @PathVariable("dayOfBirth") int dayOfBirth,
+        @PathVariable("monthOfBirth") int monthOfBirth,
+        @PathVariable("yearOfBirth") int yearOfBirth,
+        @PathVariable("pictureUrl") String pictureUrl) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Artist artist = new Artist();
+        artist.setName(name);
+        artist.setSurname(surname);
+        artist.setOrigin(origin);
+        artist.setDate(getDateRiGCZFormat(yearOfBirth, 
+                                          monthOfBirth, 
+                                          dayOfBirth));
+        artist.setPictureUrl(pictureUrl);
+
+        session.saveOrUpdate(artist);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+    
+    
+    @RequestMapping("/addShow/{day}/{month}/{year}/"
+                + "{Cinema_idCinema}/{Movie_idMovie}")
+    @ResponseBody
+    public String addShow(
+        @PathVariable("day") int day,
+        @PathVariable("month") int month,
+        @PathVariable("year") int year,
+        @PathVariable("Cinema_idCinema") int Cinema_idCinema,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Show show = new Show();
+        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        show.setCinema_idCinema(Cinema_idCinema);
+        show.setMovie_idMovie(Movie_idMovie);
+
+        session.save(show);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
+    @CrossOrigin
+    @RequestMapping("/updateArtist/{idArtist}/{name}/{surname}/{origin}"
+                    + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
+    @ResponseBody
+    public String addArtist(
+        @PathVariable("idArtist") int idArtist,
+        @PathVariable("name") String name,
+        @PathVariable("surname") String surname,
+        @PathVariable("origin") String origin,
+        @PathVariable("dayOfBirth") int dayOfBirth,
+        @PathVariable("monthOfBirth") int monthOfBirth,
+        @PathVariable("yearOfBirth") int yearOfBirth,
+        @PathVariable("pictureUrl") String pictureUrl) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Artist artist = new Artist();
+        artist.setIdArtist(idArtist);
+        artist.setName(name);
+        artist.setSurname(surname);
+        artist.setOrigin(origin);
+        artist.setDate(getDateRiGCZFormat(yearOfBirth, 
+                                          monthOfBirth, 
+                                          dayOfBirth));
+        artist.setPictureUrl(pictureUrl);
+
+        session.saveOrUpdate(artist);
+
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/updateMovie/{idMovie}/{title}/{language}/" +
+                    "{dayOfPremiere}/{monthOfPremiere}/{yearOfPremiere}/" +
+                    "{boxOffice}/{country}/{description}/{pictureUrl}")
+    @ResponseBody
+    public String updateMovie(
+        @PathVariable("idMovie") int idMovie,
+        @PathVariable("title") String title,
+        @PathVariable("language") String language,
+        @PathVariable("dayOfPremiere") int dayOfPremiere,
+        @PathVariable("monthOfPremiere") int monthOfPremiere,
+        @PathVariable("yearOfPremiere") int yearOfPremiere,
+        @PathVariable("boxOffice") int boxOffice,
+        @PathVariable("country") String country,
+        @PathVariable("description") String description,
+        @PathVariable("pictureUrl") String pictureUrl) {
+            
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        Movie movie = new Movie();
+        
+        movie.setIdMovie(idMovie);
+        movie.setTitle(title);
+        movie.setLanguage(language);
+        movie.setDateOfPremiere(getDateRiGCZFormat(yearOfPremiere, 
+            monthOfPremiere, dayOfPremiere));
+        movie.setBoxOffice(boxOffice);
+        movie.setCountry(country);
+        movie.setDescription(description);
+        movie.setPictureUrl(pictureUrl);
+            
+        session.saveOrUpdate(movie);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        
+        session.close();
+        
+        return "Successful";
+
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/removeReview/{idReview}")
+    @ResponseBody
+    public String addReview(
+        @PathVariable("idReview") int idReview){
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Review review = new Review();
+        review.setIdReview(idReview);
+        session.remove(review);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
