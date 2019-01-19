@@ -715,7 +715,28 @@ public class BackendApplication {
 
     }
     
-    
+    @CrossOrigin
+    @RequestMapping("/removeReview/{idReview}")
+    @ResponseBody
+    public String addReview(@PathVariable("idReview") int idReview){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        Review review = new Review();
+        review.setIdReview(idReview);
+        session.remove(review);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
