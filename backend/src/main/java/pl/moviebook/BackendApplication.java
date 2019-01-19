@@ -667,7 +667,55 @@ public class BackendApplication {
 
         return basicArtists;
     }
-       
+
+    @CrossOrigin
+    @RequestMapping("/updateMovie/{idMovie}/{title}/{language}/" +
+                    "{dayOfPremiere}/{monthOfPremiere}/{yearOfPremiere}/" +
+                    "{boxOffice}/{country}/{description}/{pictureUrl}")
+    @ResponseBody
+    public String updateMovie(
+        @PathVariable("idMovie") int idMovie,
+        @PathVariable("title") String title,
+        @PathVariable("language") String language,
+        @PathVariable("dayOfPremiere") int dayOfPremiere,
+        @PathVariable("monthOfPremiere") int monthOfPremiere,
+        @PathVariable("yearOfPremiere") int yearOfPremiere,
+        @PathVariable("boxOffice") int boxOffice,
+        @PathVariable("country") String country,
+        @PathVariable("description") String description,
+        @PathVariable("pictureUrl") String pictureUrl) {
+            
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        Movie movie = new Movie();
+        
+        movie.setIdMovie(idMovie);
+        movie.setTitle(title);
+        movie.setLanguage(language);
+        movie.setDateOfPremiere(getDateRiGCZFormat(yearOfPremiere, 
+            monthOfPremiere, dayOfPremiere));
+        movie.setBoxOffice(boxOffice);
+        movie.setCountry(country);
+        movie.setDescription(description);
+        movie.setPictureUrl(pictureUrl);
+            
+        session.saveOrUpdate(movie);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        
+        session.close();
+        
+        return "Successful";
+
+    }
+    
+    
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
