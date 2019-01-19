@@ -34,16 +34,6 @@ public class BackendApplication {
 
     SessionFactory sessionFactory = Connection.getSessionFactory();
 
-    private Date getDateRiGCZFormat(int year, int month, int day)
-    {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-
-        return new Date(cal.getTime().getTime());
-    }
-
     @CrossOrigin
     @RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
     @ResponseBody
@@ -102,6 +92,62 @@ public class BackendApplication {
 
         return new Date(cal.getTime().getTime());
     }
+
+	private Date getDateRiGCZFormat(int year, int month, int day)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		return new Date(cal.getTime().getTime());
+	}
+	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+
+		return new Date(cal.getTime().getTime());
+	}
+
+	@CrossOrigin
+	@RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/{dateMonth}/{dateDay}/{timeHour}/{timeMinute}/{timeSecond}/{description}")
+	@ResponseBody
+	public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
+						@PathVariable("User_login") String User_login,
+						@PathVariable("dateYear") int dateYear,
+						@PathVariable("dateMonth") int dateMonth,
+						@PathVariable("dateDay") int dateDay,
+						@PathVariable("timeHour") int timeHour,
+						@PathVariable("timeMinute") int timeMinute,
+						@PathVariable("timeSecond") int timeSecond,
+						@PathVariable("description") String description) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Issue issue = new Issue();
+		issue.setIdMovie(idMovie);
+		issue.setLogin(User_login);
+		issue.setIssueDateTime(getDateTimeRiGCZFormat(dateYear, dateMonth, dateDay, timeHour, timeMinute, timeSecond));
+		issue.setDescription(description);
+		session.save(issue);
+		try{
+			session.getTransaction().commit();
+		} catch(Exception e) {
+			session.close();
+			return "Unsuccessful<br />" + e.getMessage();
+		}
+		session.close();
+		return "Successful";
+		
+		
+	}
+
 
     @CrossOrigin
     @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/"
@@ -551,6 +597,7 @@ public class BackendApplication {
         session.close();
         
         return "Successful";
+
     }
 
     @CrossOrigin
@@ -641,6 +688,7 @@ public class BackendApplication {
             session.close();
             return basicMovies;
         }
+
 
     public static void main(String[] args) {
         
