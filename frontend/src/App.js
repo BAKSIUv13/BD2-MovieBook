@@ -9,7 +9,6 @@ import './css/App.css';
 import Home from './components/Home';
 import Header from './components/Header';
 import AdminTools from './components/AdminTools';
-import Account from './components/Account';
 import SalesmanTools from './components/SalesmanTools';
 import EditorTools from './components/EditorTools';
 import MovieListContainer from './containers/MovieListContainer';
@@ -20,6 +19,7 @@ import FilmCinema from './components/FilmCinema';
 import AddMovieComponent from './components/AddMovieComponent';
 import TvProgramList from './components/TvProgramList';
 import TvProgramFilms from './components/TvProgramFilms';
+import Account from './components/Account';
 
 
 class App extends Component {
@@ -39,11 +39,10 @@ class App extends Component {
           <Route exact path="/salesmanTools" component={SalesmanTools} />
           <Route exact path="/editorTools" component={EditorTools} />
           <Route exact path="/cinemas" component={CinemaList} />
-          <Route exact path="/addMovie" component={AddMovieComponent} />
           <Route exact path="/cinemas/:id" component={FilmCinema} />
           <Route exact path="/tvprograms/" component={TvProgramList} />
           <Route exact path="/tvprograms/:id" component={TvProgramFilms} />
-
+          <Route exact path="/addMovie" component={AddMovieComponent} />
 
           
 
