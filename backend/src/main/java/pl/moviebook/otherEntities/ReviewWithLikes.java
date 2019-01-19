@@ -5,11 +5,13 @@ public class ReviewWithLikes {
 	private int idReview;
 	private String content;
 	private int amountOfLikes;
+	private String login;
 	
-	public ReviewWithLikes(int idReview, String content, int amountOfLikes) {
+	public ReviewWithLikes(int idReview, String content, int amountOfLikes, String login) {
 		this.idReview = idReview;
 		this.content = content;
 		this.amountOfLikes = amountOfLikes;
+		this.login = login;
 	}
 	
 	public int getIdReview() {
@@ -29,5 +31,13 @@ public class ReviewWithLikes {
 	}
 	public void setAmountOfLikes(int amountOfLikes) {
 		this.amountOfLikes = amountOfLikes;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
 	}
 }

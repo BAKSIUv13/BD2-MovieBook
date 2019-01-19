@@ -102,26 +102,18 @@ public class BackendApplication {
     }
 
     @CrossOrigin
-    @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/"
-                    + "{dateMonth}/{dateDay}/{timeHour}/{timeMinute}/"
-                    + "{timeSecond}/{description}")
+    @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{description}")
     @ResponseBody
     public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
                         @PathVariable("User_login") String User_login,
-                        @PathVariable("dateYear") int dateYear,
-                        @PathVariable("dateMonth") int dateMonth,
-                        @PathVariable("dateDay") int dateDay,
-                        @PathVariable("timeHour") int timeHour,
-                        @PathVariable("timeMinute") int timeMinute,
-                        @PathVariable("timeSecond") int timeSecond,
                         @PathVariable("description") String description) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         Issue issue = new Issue();
         issue.setIdMovie(idMovie);
         issue.setLogin(User_login);
-        issue.setIssueDateTime(getDateTimeRiGCZFormat(
-            dateYear, dateMonth, dateDay, timeHour, timeMinute, timeSecond));
+        java.util.Date utilDate= new java.util.Date();
+        issue.setIssueDateTime(new java.sql.Timestamp(utilDate.getTime()));
         issue.setDescription(description);
         session.save(issue);
         try{
@@ -371,9 +363,8 @@ public class BackendApplication {
             artists.add(data);
         }
         
-        querySQL = session.createSQLQuery("SELECT Review.idReview, Review.content FROM Review " + 
-                "INNER JOIN Movie ON Review.Movie_idMovie = Movie.idMovie " + 
-                "WHERE Movie.idMovie = :id")
+        querySQL = session.createSQLQuery("SELECT Review.idReview, Review.content, Review.User_login FROM Review " + 
+                "WHERE Review.Movie_idMovie = :id")
                 .setParameter("id", movie.getIdMovie());
         
         List<Object[]> reviewsSQLResult = (List<Object[]>) querySQL.list();
@@ -385,7 +376,7 @@ public class BackendApplication {
                     .setParameter("id", (int) review[0]);
             int amountOfLikes = ((BigInteger) querySQL.getSingleResult()).intValue();
             
-            reviews.add(new ReviewWithLikes((int) review[0], (String) review[1], amountOfLikes));
+            reviews.add(new ReviewWithLikes((int) review[0], (String) review[1], amountOfLikes, (String) review[2] ));
         }
         
         querySQL = session.createQuery("FROM Prize WHERE Movie_idMovie = :id").setParameter("id", movie.getIdMovie());
@@ -716,8 +707,9 @@ public class BackendApplication {
             List<Object[]> result = query.list();
             
             for(Object[] data : result) {
+            	List<String> genres = getMovieGenres((int) data[0], session);
                 movies.add( new MovieBasicInformations((int) data[0], (String) data[1], (Date) data[2],
-                		(String) data[3], null));
+                		(String) data[3], genres));
             }
             
             typeAndFilms.add(new ArtistTypeAndFilms(type, movies));

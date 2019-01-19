@@ -2,6 +2,7 @@ package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,16 +23,16 @@ public class Issue implements Serializable {
 	private int idMovie;	
 
 	@Column(name="dateTime")
-	private Date issueDateTime;
+	private Timestamp issueDateTime;
 
 	@Column(name="User_login")
 	private String login;
 
-	public Date getIssueDateTime() {
+	public Timestamp getIssueDateTime() {
 		return issueDateTime;
 	}
 
-	public void setIssueDateTime(Date issueDateTime) {
+	public void setIssueDateTime(Timestamp issueDateTime) {
 		this.issueDateTime = issueDateTime;
 	}
 
