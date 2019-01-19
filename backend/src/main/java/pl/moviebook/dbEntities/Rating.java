@@ -1,6 +1,7 @@
 package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,9 @@ public class Rating implements Serializable {
 
     @Column(name="rate")
     private int rate;
+    
+    @Column(name="date")
+    private Date date;
 
     /**
      * @return the user_login
@@ -65,4 +69,12 @@ public class Rating implements Serializable {
     public void setRate(int rate) {
         this.rate = rate;
     }
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 }

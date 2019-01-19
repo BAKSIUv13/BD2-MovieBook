@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import pl.moviebook.dbEntities.*;
 import pl.moviebook.otherEntities.*;
 
-import java.sql.Date;
-
 @CrossOrigin
 @Controller
 @SpringBootApplication
@@ -171,6 +169,8 @@ public class BackendApplication {
         review.setIdMovie(idMovie);
         review.setLogin(User_login);
         review.setContent(content);
+        java.util.Date utilDate= new java.util.Date();
+        review.setDate(new java.sql.Date(utilDate.getTime()));
         session.save(review);
         try{
             session.getTransaction().commit();
@@ -463,6 +463,8 @@ public class BackendApplication {
         rating.setUser_login(User_login);
         rating.setMovie_idMovie(Movie_idMovie);
         rating.setRate(rate);
+        java.util.Date utilDate= new java.util.Date();
+        rating.setDate(new java.sql.Date(utilDate.getTime()));
 
         session.saveOrUpdate(rating);
         try{
@@ -568,6 +570,8 @@ public class BackendApplication {
         Like like = new Like();
         like.setReview_idReview(Review_idReview);
         like.setUser_login(User_login);
+        java.util.Date utilDate= new java.util.Date();
+        like.setDate(new java.sql.Date(utilDate.getTime()));
 
         session.saveOrUpdate(like);
         try{
@@ -583,9 +587,9 @@ public class BackendApplication {
     }
 
     @CrossOrigin
-    @RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
+    @RequestMapping("/removeLikeFromReview/{Review_idReview}/{User_login}")
     @ResponseBody
-    public String removeLikeToReview(
+    public String removeLikeFromReview(
         @PathVariable("Review_idReview") int Review_idReview,
         @PathVariable("User_login") String User_login) {
         
@@ -657,9 +661,10 @@ public class BackendApplication {
 
         for (Artist artist : list) {
             BasicArtist basicArtist = new BasicArtist();
+            basicArtist.setId(artist.getId());
             basicArtist.setName(artist.getName());
             basicArtist.setSurname(artist.getSurname());
-            basicArtist.setPhotoUrl(artist.getPictureUrl());
+            basicArtist.setPictureUrl(artist.getPictureUrl());
 
             basicArtists.add(basicArtist);
         }
@@ -668,6 +673,60 @@ public class BackendApplication {
         return basicArtists;
     }
        
+    @CrossOrigin
+    @RequestMapping("/getArtist/{idArtist}")
+    @ResponseBody
+    public ArtistFullInformations getArtist(
+        @PathVariable("idArtist") int idArtist) {
+        
+    	Session session = sessionFactory.openSession();
+    	
+        Artist artist;
+
+        try {
+            artist =  (Artist) session.get(Artist.class, idArtist);
+        } catch (Exception e) {
+            System.out.print(e);
+            session.close();
+            return null;
+        }
+        
+        Query query = session.createSQLQuery("SELECT ArtistType_name FROM Artist_has_ArtistType "
+        		+ "WHERE Artist_idArtist = :id")
+        		.setParameter("id", idArtist);
+        
+        List<String> types = query.list();
+        
+        query = session.createQuery("FROM Prize WHERE Artist_idArtist = :id").setParameter("id", idArtist);
+        List<Prize> prizes = (List<Prize>) query.list();
+        
+        List<ArtistTypeAndFilms> typeAndFilms = new ArrayList<>();
+        
+        for( String type : types) {
+        	List<MovieBasicInformations> movies = new ArrayList<>();
+        	
+        	query = session.createSQLQuery("SELECT film.idMovie, film.title, film.dateOfPremiere, film.pictureUrl FROM Artist_has_ArtistType as type \n" + 
+        			"INNER JOIN Movie_has_Artist as a ON type.id = a.Artist_has_ArtistType_id\n" + 
+        			"INNER JOIN Movie as film ON a.Movie_idMovie = film.idMovie\n" + 
+        			"WHERE type.Artist_idArtist = :id AND type.Artisttype_name = :type")
+        			.setParameter("id", idArtist)
+        			.setParameter("type", type);
+            List<Object[]> result = query.list();
+            
+            for(Object[] data : result) {
+                movies.add( new MovieBasicInformations((int) data[0], (String) data[1], (Date) data[2],
+                		(String) data[3], null));
+            }
+            
+            typeAndFilms.add(new ArtistTypeAndFilms(type, movies));
+        }
+        
+        return new ArtistFullInformations(artist.getId(), artist.getSurname(), artist.getName(),
+        		artist.getOrigin(), artist.getDate(), artist.getPictureUrl(), types, prizes, typeAndFilms);
+    	
+    
+    }
+    
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);

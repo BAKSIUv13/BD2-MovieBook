@@ -1,6 +1,7 @@
 package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,9 @@ public class Like implements Serializable {
     @Id
     @Column(name="User_login")
     private String User_login;
+    
+    @Column(name="date")
+    private Date date;
 
     /**
      * @return the review_idReview
@@ -48,6 +52,14 @@ public class Like implements Serializable {
     public void setUser_login(String user_login) {
         User_login = user_login;
     }
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
 
 }
