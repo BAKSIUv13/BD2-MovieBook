@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -721,8 +723,10 @@ public class BackendApplication {
             typeAndFilms.add(new ArtistTypeAndFilms(type, movies));
         }
         
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
         return new ArtistFullInformations(artist.getId(), artist.getSurname(), artist.getName(),
-        		artist.getOrigin(), artist.getDate(), artist.getPictureUrl(), types, prizes, typeAndFilms);
+        		artist.getOrigin(), df.format(artist.getDate()), artist.getPictureUrl(), types, prizes, typeAndFilms);
     	
     
     }
