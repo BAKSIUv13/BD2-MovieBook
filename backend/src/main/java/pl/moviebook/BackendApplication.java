@@ -31,8 +31,18 @@ import java.sql.Date;
 @Controller
 @SpringBootApplication
 public class BackendApplication {
-    
+
     SessionFactory sessionFactory = Connection.getSessionFactory();
+
+    private Date getDateRiGCZFormat(int year, int month, int day)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+
+        return new Date(cal.getTime().getTime());
+    }
 
     @CrossOrigin
     @RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
@@ -53,10 +63,8 @@ public class BackendApplication {
         }
         session.close();
         return "Successful";
-        
-        
     }
-    
+
     @CrossOrigin
     @RequestMapping("/removeToWatch/{Movie_idMovie}/{User_login}")
     @ResponseBody
@@ -76,64 +84,59 @@ public class BackendApplication {
         }
         session.close();
         return "Successful";
-        
-        
+
+
     }
 
-	private Date getDateRiGCZFormat(int year, int month, int day)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
 
-		return new Date(cal.getTime().getTime());
-	}
-	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
+    private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, day);
 
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		cal.set(Calendar.SECOND, second);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, second);
 
-		return new Date(cal.getTime().getTime());
-	}
+        return new Date(cal.getTime().getTime());
+    }
 
-	@CrossOrigin
-	@RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/{dateMonth}/{dateDay}/{timeHour}/{timeMinute}/{timeSecond}/{description}")
-	@ResponseBody
-	public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
-						@PathVariable("User_login") String User_login,
-						@PathVariable("dateYear") int dateYear,
-						@PathVariable("dateMonth") int dateMonth,
-						@PathVariable("dateDay") int dateDay,
-						@PathVariable("timeHour") int timeHour,
-						@PathVariable("timeMinute") int timeMinute,
-						@PathVariable("timeSecond") int timeSecond,
-						@PathVariable("description") String description) {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		Issue issue = new Issue();
-		issue.setIdMovie(idMovie);
-		issue.setLogin(User_login);
-		issue.setIssueDateTime(getDateTimeRiGCZFormat(dateYear, dateMonth, dateDay, timeHour, timeMinute, timeSecond));
-		issue.setDescription(description);
-		session.save(issue);
-		try{
-			session.getTransaction().commit();
-		} catch(Exception e) {
-			session.close();
-			return "Unsuccessful<br />" + e.getMessage();
-		}
-		session.close();
-		return "Successful";
-		
-		
-	}
+    @CrossOrigin
+    @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/"
+                    + "{dateMonth}/{dateDay}/{timeHour}/{timeMinute}/"
+                    + "{timeSecond}/{description}")
+    @ResponseBody
+    public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
+                        @PathVariable("User_login") String User_login,
+                        @PathVariable("dateYear") int dateYear,
+                        @PathVariable("dateMonth") int dateMonth,
+                        @PathVariable("dateDay") int dateDay,
+                        @PathVariable("timeHour") int timeHour,
+                        @PathVariable("timeMinute") int timeMinute,
+                        @PathVariable("timeSecond") int timeSecond,
+                        @PathVariable("description") String description) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Issue issue = new Issue();
+        issue.setIdMovie(idMovie);
+        issue.setLogin(User_login);
+        issue.setIssueDateTime(getDateTimeRiGCZFormat(
+            dateYear, dateMonth, dateDay, timeHour, timeMinute, timeSecond));
+        issue.setDescription(description);
+        session.save(issue);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful<br />" + e.getMessage();
+        }
+        session.close();
+        return "Successful";
+
+
+    }
 
 
     @CrossOrigin
@@ -157,10 +160,8 @@ public class BackendApplication {
         }
         session.close();
         return "Successful";
-        
-        
+
     }
-    
     @RequestMapping("/allArtists")
     @ResponseBody
     public List<Artist> getAllArtists() {
@@ -170,22 +171,21 @@ public class BackendApplication {
         // SQL syntax - createSQLQery
         Query<Artist> query = session.createQuery("from Artist");
         List<Artist> list = query.list();
-        
         session.close();
 
         return list;
     }
-    
+
     @CrossOrigin
     @RequestMapping("/login/{login}/{password}")
     @ResponseBody
     public String login(@PathVariable("login") String login,
                         @PathVariable("password") String password) {
-        
+
         Session session = sessionFactory.openSession();
-        
+
         Query query = session.createSQLQuery(
-            "SELECT UserType_name FROM User " + 
+            "SELECT UserType_name FROM User " +
             "WHERE login = :login AND password = :password")
             .setParameter("login", login)
                 .setParameter("password", password);
@@ -217,24 +217,24 @@ public class BackendApplication {
     }
     
     @CrossOrigin
-	@RequestMapping("/getTransmitions/{station}")
-	@ResponseBody
-	public List<TransmitionOnStation> getTransmitionOnStation(@PathVariable("station") String station) {
-		Session session = sessionFactory.openSession();
-		
-		List<TransmitionOnStation> transmitions = new ArrayList<>();
-		Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
-				+ "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id "
-				+ "GROUP BY TvProgram.dateTime ASC")
-				.setParameter("id", station);
-		List<Object[]> transmitionsSQLResult = (List<Object[]>) querySQL.list();
-		
-		for(Object[] transmition : transmitionsSQLResult) {
-			transmitions.add(new TransmitionOnStation((((Timestamp) transmition[0]).getTime()), (String) transmition[1], (int) transmition[2]));
-		}
-		
-		return transmitions;
-	}
+    @RequestMapping("/getTransmitions/{station}")
+    @ResponseBody
+    public List<TransmitionOnStation> getTransmitionOnStation(@PathVariable("station") String station) {
+        Session session = sessionFactory.openSession();
+        
+        List<TransmitionOnStation> transmitions = new ArrayList<>();
+        Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
+                + "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id "
+                + "GROUP BY TvProgram.dateTime ASC")
+                .setParameter("id", station);
+        List<Object[]> transmitionsSQLResult = (List<Object[]>) querySQL.list();
+        
+        for(Object[] transmition : transmitionsSQLResult) {
+            transmitions.add(new TransmitionOnStation((((Timestamp) transmition[0]).getTime()), (String) transmition[1], (int) transmition[2]));
+        }
+        
+        return transmitions;
+    }
 
     @RequestMapping("/allCinemas")
     @ResponseBody
@@ -249,39 +249,39 @@ public class BackendApplication {
         return list;
     }
     
-	@RequestMapping("/getShows/{idCinema}")
-	@ResponseBody
-	public List<FilmInCinema> getFilmInCinema(@PathVariable("idCinema") int idCinema) {
-		Session session = sessionFactory.openSession();
-		
-		List<FilmInCinema> filmsInCinema = new ArrayList<>();
-		Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
-				+ "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id "
-				+ "GROUP BY `Show`.dateTime ASC")
-				.setParameter("id", idCinema);
-		List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
-		
-		for(Object[] show : showsSQLResult) {
-			filmsInCinema.add(new FilmInCinema((((Timestamp) show[0]).getTime()), (String) show[1], (int) show[2]));
-		}
-		
-		return filmsInCinema;
-	}
-	
-	@RequestMapping("/getCinemaName/{idCinema}")
-	@ResponseBody
-	public String getCinemaName(@PathVariable("idCinema") int idCinema) {
-		Session session = sessionFactory.openSession();
-		
-		Query querySQL = session.createSQLQuery("SELECT Cinema.name, Cinema.city FROM Cinema WHERE Cinema.idCinema = :id")
-				.setParameter("id", idCinema);
-		
-		Object[] cinemaSQLResult = (Object[]) querySQL.getSingleResult();
-		
-		return (String) cinemaSQLResult[0] + " " + (String) cinemaSQLResult[1];
-		
-	}
-	
+    @RequestMapping("/getShows/{idCinema}")
+    @ResponseBody
+    public List<FilmInCinema> getFilmInCinema(@PathVariable("idCinema") int idCinema) {
+        Session session = sessionFactory.openSession();
+        
+        List<FilmInCinema> filmsInCinema = new ArrayList<>();
+        Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
+                + "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id "
+                + "GROUP BY `Show`.dateTime ASC")
+                .setParameter("id", idCinema);
+        List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
+        
+        for(Object[] show : showsSQLResult) {
+            filmsInCinema.add(new FilmInCinema((((Timestamp) show[0]).getTime()), (String) show[1], (int) show[2]));
+        }
+        
+        return filmsInCinema;
+    }
+    
+    @RequestMapping("/getCinemaName/{idCinema}")
+    @ResponseBody
+    public String getCinemaName(@PathVariable("idCinema") int idCinema) {
+        Session session = sessionFactory.openSession();
+        
+        Query querySQL = session.createSQLQuery("SELECT Cinema.name, Cinema.city FROM Cinema WHERE Cinema.idCinema = :id")
+                .setParameter("id", idCinema);
+        
+        Object[] cinemaSQLResult = (Object[]) querySQL.getSingleResult();
+        
+        return (String) cinemaSQLResult[0] + " " + (String) cinemaSQLResult[1];
+        
+    }
+    
     
     @RequestMapping("/allMovies")
     @ResponseBody
@@ -529,63 +529,63 @@ public class BackendApplication {
         session.close();
         
         return "Successful";
-	}
+    }
 
-	@CrossOrigin
-	@RequestMapping("/addLikeToReview/{Review_idReview}/{User_login}")
-	@ResponseBody
-	public String addLikeToReview(
-	    @PathVariable("Review_idReview") int Review_idReview,
-	    @PathVariable("User_login") String User_login) {
-	    
-	    Session session = sessionFactory.openSession();
-		
-	    session.beginTransaction();
-	    
-	    Like like = new Like();
-	    like.setReview_idReview(Review_idReview);
-	    like.setUser_login(User_login);
+    @CrossOrigin
+    @RequestMapping("/addLikeToReview/{Review_idReview}/{User_login}")
+    @ResponseBody
+    public String addLikeToReview(
+        @PathVariable("Review_idReview") int Review_idReview,
+        @PathVariable("User_login") String User_login) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Like like = new Like();
+        like.setReview_idReview(Review_idReview);
+        like.setUser_login(User_login);
 
-	    session.saveOrUpdate(like);
-	    try{
-		session.getTransaction().commit();
-	    } catch(Exception e) {
-		session.close();
-		return "Unsuccessful";
-	    }
-	    
-	    session.close();
-	    
-	    return "Successful";
-	}
+        session.saveOrUpdate(like);
+        try{
+        session.getTransaction().commit();
+        } catch(Exception e) {
+        session.close();
+        return "Unsuccessful";
+        }
+        
+        session.close();
+        
+        return "Successful";
+    }
 
-	@CrossOrigin
-	@RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
-	@ResponseBody
-	public String removeLikeToReview(
-	    @PathVariable("Review_idReview") int Review_idReview,
-	    @PathVariable("User_login") String User_login) {
-	    
-	    Session session = sessionFactory.openSession();
-		
-	    session.beginTransaction();
-	    
-	    Like like = new Like();
-	    like.setReview_idReview(Review_idReview);
-	    like.setUser_login(User_login);
+    @CrossOrigin
+    @RequestMapping("/removeLikeToReview/{Review_idReview}/{User_login}")
+    @ResponseBody
+    public String removeLikeToReview(
+        @PathVariable("Review_idReview") int Review_idReview,
+        @PathVariable("User_login") String User_login) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Like like = new Like();
+        like.setReview_idReview(Review_idReview);
+        like.setUser_login(User_login);
 
-	    session.remove(like);
-	    try{
-		session.getTransaction().commit();
-	    } catch(Exception e) {
-		session.close();
-		return "Unsuccessful";
-	    }
-	    
-	    session.close();
-	    
-	    return "Successful";
-	}
+        session.remove(like);
+        try{
+        session.getTransaction().commit();
+        } catch(Exception e) {
+        session.close();
+        return "Unsuccessful";
+        }
+        
+        session.close();
+        
+        return "Successful";
+    }
 
     public static void main(String[] args) {
         
