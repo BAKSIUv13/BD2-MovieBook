@@ -16,7 +16,7 @@ public class Artist implements Serializable {
 
 	@Id
 	@Column(name="idArtist")
-	private int id;
+	private int idArtist;
 	
 	@Column(name="name")
 	private String name;
@@ -34,11 +34,11 @@ public class Artist implements Serializable {
 	private String pictureUrl;
 
 	public int getId() {
-		return id;
+		return idArtist;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setIdArtist(int id) {
+		this.idArtist = id;
 	}
 
 	public String getName() {

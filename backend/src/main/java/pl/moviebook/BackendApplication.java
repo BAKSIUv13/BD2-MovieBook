@@ -670,10 +670,10 @@ public class BackendApplication {
     
     // not idArtist because of autoincrement
     @CrossOrigin
-    @RequestMapping("/addOrUpdateArtist/{name}/{surname}/{origin}"
+    @RequestMapping("/addArtist/{name}/{surname}/{origin}"
                     + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
     @ResponseBody
-    public String addOrUpdateArtist(
+    public String addArtist(
         @PathVariable("name") String name,
         @PathVariable("surname") String surname,
         @PathVariable("origin") String origin,
@@ -687,6 +687,46 @@ public class BackendApplication {
         session.beginTransaction();
         
         Artist artist = new Artist();
+        artist.setName(name);
+        artist.setSurname(surname);
+        artist.setOrigin(origin);
+        artist.setDate(getDateRiGCZFormat(yearOfBirth, 
+                                          monthOfBirth, 
+                                          dayOfBirth));
+        artist.setPictureUrl(pictureUrl);
+
+        session.saveOrUpdate(artist);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
+    @CrossOrigin
+    @RequestMapping("/updateArtist/{idArtist}/{name}/{surname}/{origin}"
+                    + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
+    @ResponseBody
+    public String addArtist(
+        @PathVariable("idArtist") int idArtist,
+        @PathVariable("name") String name,
+        @PathVariable("surname") String surname,
+        @PathVariable("origin") String origin,
+        @PathVariable("dayOfBirth") int dayOfBirth,
+        @PathVariable("monthOfBirth") int monthOfBirth,
+        @PathVariable("yearOfBirth") int yearOfBirth,
+        @PathVariable("pictureUrl") String pictureUrl) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Artist artist = new Artist();
+        artist.setIdArtist(idArtist);
         artist.setName(name);
         artist.setSurname(surname);
         artist.setOrigin(origin);
