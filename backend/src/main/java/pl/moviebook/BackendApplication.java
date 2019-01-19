@@ -34,6 +34,29 @@ public class BackendApplication {
 
     SessionFactory sessionFactory = Connection.getSessionFactory();
 
+    private Date getDateRiGCZFormat(int year, int month, int day)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		return new Date(cal.getTime().getTime());
+	}
+	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month - 1);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+
+		return new Date(cal.getTime().getTime());
+	}
+
     @CrossOrigin
     @RequestMapping("/addToWatch/{Movie_idMovie}/{User_login}")
     @ResponseBody
@@ -77,29 +100,6 @@ public class BackendApplication {
 
 
     }
-
-	private Date getDateRiGCZFormat(int year, int month, int day)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
-
-		return new Date(cal.getTime().getTime());
-	}
-	private Date getDateTimeRiGCZFormat(int year, int month, int day, int hour, int minute, int second)
-	{
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, year);
-		cal.set(Calendar.MONTH, month - 1);
-		cal.set(Calendar.DAY_OF_MONTH, day);
-
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		cal.set(Calendar.SECOND, second);
-
-		return new Date(cal.getTime().getTime());
-	}
 
     @CrossOrigin
     @RequestMapping("/addIssue/{Movie_idMovie}/{User_login}/{dateYear}/"
@@ -667,7 +667,46 @@ public class BackendApplication {
 
         return basicArtists;
     }
-       
+    
+    // not idArtist because of autoincrement
+    @CrossOrigin
+    @RequestMapping("/addOrUpdateArtist/{name}/{surname}/{origin}"
+                    + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
+    @ResponseBody
+    public String addOrUpdateArtist(
+        @PathVariable("name") String name,
+        @PathVariable("surname") String surname,
+        @PathVariable("origin") String origin,
+        @PathVariable("dayOfBirth") int dayOfBirth,
+        @PathVariable("monthOfBirth") int monthOfBirth,
+        @PathVariable("yearOfBirth") int yearOfBirth,
+        @PathVariable("pictureUrl") String pictureUrl) {
+        
+        Session session = sessionFactory.openSession();
+        
+        session.beginTransaction();
+        
+        Artist artist = new Artist();
+        artist.setName(name);
+        artist.setSurname(surname);
+        artist.setOrigin(origin);
+        artist.setDate(getDateRiGCZFormat(yearOfBirth, 
+                                          monthOfBirth, 
+                                          dayOfBirth));
+        artist.setPictureUrl(pictureUrl);
+
+        session.saveOrUpdate(artist);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
