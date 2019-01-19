@@ -125,22 +125,22 @@ VALUES (
 '2',  'Adventure'
 );
 
-INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user1', 1, 7);
-INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user2', 1, 4);
-INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user3', 1, 6);
-INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`) VALUES ('user4', 1, 10);
+INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`, `date`) VALUES ('user1', 1, 7, '2019-01-01');
+INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`, `date`) VALUES ('user2', 1, 4, '2019-01-02');
+INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`, `date`) VALUES ('user3', 1, 6, '2019-01-03');
+INSERT INTO `Rating`(`User_login`, `Movie_idMovie`, `rate`, `date`) VALUES ('user4', 1, 10, '2019-01-04');
 
-INSERT INTO `Issue`(`dateTime`, `desprition`, `Movie_idMovie`, `User_login`) VALUES ('2018-12-11 10:00', 'lorem ipsum lorem ipsum', 1, 'user1');
-INSERT INTO `Issue`(`dateTime`, `desprition`, `Movie_idMovie`, `User_login`) VALUES ('2018-12-17 17:45', 'ipsum ipsum lorem lorem', 1, 'user4');
+INSERT INTO `Issue`(`dateTime`, `description`, `Movie_idMovie`, `User_login`) VALUES ('2018-12-11 10:00', 'lorem ipsum lorem ipsum', 1, 'user1');
+INSERT INTO `Issue`(`dateTime`, `description`, `Movie_idMovie`, `User_login`) VALUES ('2018-12-17 17:45', 'ipsum ipsum lorem lorem', 1, 'user4');
 
 INSERT INTO `ToWatch`(`User_login`, `Movie_idMovie`) VALUES ('user5', 1);
 
-INSERT INTO `Review`(`content`, `Movie_idMovie`, `User_login`) VALUES ('cool film', 1, 'user1');
-INSERT INTO `Review`(`content`, `Movie_idMovie`, `User_login`) VALUES ('interesting film', 1, 'user3');
+INSERT INTO `Review`(`content`, `Movie_idMovie`, `User_login`, `date`) VALUES ('cool film', 1, 'user1', '2019-01-08');
+INSERT INTO `Review`(`content`, `Movie_idMovie`, `User_login`, `date`) VALUES ('interesting film', 1, 'user3', '2019-01-09');
 
-INSERT INTO `Like`(`Review_idReview`, `User_login`) VALUES (1, 'user2');
-INSERT INTO `Like`(`Review_idReview`, `User_login`) VALUES (1, 'user5');
-INSERT INTO `Like`(`Review_idReview`, `User_login`) VALUES (2, 'user2');
+INSERT INTO `Like`(`Review_idReview`, `User_login`, `date`) VALUES (1, 'user2', '2019-01-10');
+INSERT INTO `Like`(`Review_idReview`, `User_login`, `date`) VALUES (1, 'user5','2019-01-12');
+INSERT INTO `Like`(`Review_idReview`, `User_login`, `date`) VALUES (2, 'user2', '2019-01-13');
 
 INSERT INTO `Answer`(`idAnswer`, `content`) VALUES (1,'15806 Sherpa lane 59096 rock way Alaska');
 INSERT INTO `Answer`(`idAnswer`, `content`) VALUES (2, 'A. Hardwits 35 kangaroo way Nostrand');
