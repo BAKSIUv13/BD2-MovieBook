@@ -188,22 +188,22 @@ public class BackendApplication {
     @RequestMapping("/getFilmsToWatch/{login}")
     @ResponseBody
     public List<MovieBasicInformations> getFilmsToWatch(@PathVariable("login") String login) {
-    	Session session = sessionFactory.openSession();
-    	Query query = session.createSQLQuery("SELECT ToWatch.Movie_idMovie From ToWatch WHERE ToWatch.User_login = :login")
-    			.setParameter("login", login);
-    	
-    	List<Integer> filmsIds = query.list();
-    	List<MovieBasicInformations> filmsToWatch = new ArrayList<>();
-    	
-    	for(Integer id : filmsIds) {
-    		List<String> genres = getMovieGenres(id, session);
-    		query = session.createSQLQuery("SELECT Movie.title, Movie.dateOfPremiere, Movie.pictureUrl From Movie WHERE Movie.idMovie = :id")
-    				.setParameter("id", id);
-    		Object[] result = (Object[]) query.getSingleResult();
-    		filmsToWatch.add(new MovieBasicInformations(id, (String) result[0], (Date) result[1], (String) result[2], genres));
-    	}
-    	
-    	return filmsToWatch;
+        Session session = sessionFactory.openSession();
+        Query query = session.createSQLQuery("SELECT ToWatch.Movie_idMovie From ToWatch WHERE ToWatch.User_login = :login")
+                .setParameter("login", login);
+        
+        List<Integer> filmsIds = query.list();
+        List<MovieBasicInformations> filmsToWatch = new ArrayList<>();
+        
+        for(Integer id : filmsIds) {
+            List<String> genres = getMovieGenres(id, session);
+            query = session.createSQLQuery("SELECT Movie.title, Movie.dateOfPremiere, Movie.pictureUrl From Movie WHERE Movie.idMovie = :id")
+                    .setParameter("id", id);
+            Object[] result = (Object[]) query.getSingleResult();
+            filmsToWatch.add(new MovieBasicInformations(id, (String) result[0], (Date) result[1], (String) result[2], genres));
+        }
+        
+        return filmsToWatch;
     }
 
 
@@ -230,6 +230,8 @@ public class BackendApplication {
         return "Successful";
 
     }
+
+    @CrossOrigin
     @RequestMapping("/allArtists")
     @ResponseBody
     public List<Artist> getAllArtists() {
@@ -656,40 +658,64 @@ public class BackendApplication {
         return "Successful";
     }
 
-        @CrossOrigin
-        @RequestMapping("/getToWatchList/{User_login}")
-        @ResponseBody
-        public List<MovieBasicInformations> getToWatchList(
-            @PathVariable("User_login") String User_login) {
-            
-            Session session = sessionFactory.openSession();
+    @CrossOrigin
+    @RequestMapping("/getToWatchList/{User_login}")
+    @ResponseBody
+    public List<MovieBasicInformations> getToWatchList(
+        @PathVariable("User_login") String User_login) {
         
-                
-            Query query = session.createQuery(
-                "select movie " + 
-                "from Movie as movie, ToWatch as toWatch " + 
-                "where :User_login = toWatch.User_login " + 
-                "and movie.idMovie = toWatch.Movie_idMovie "
-            ).setParameter("User_login", User_login);
+        Session session = sessionFactory.openSession();
     
-            List<Movie> movies = query.list();
-    
-            List<MovieBasicInformations> basicMovies = new ArrayList<>();
-            for(Movie movie : movies) {
-                
-                List<String> genres = getMovieGenres(movie.getIdMovie(), session);
-                
-                MovieBasicInformations movieLite = new MovieBasicInformations(
-                    movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
-                    movie.getPictureUrl(), genres);
-                basicMovies.add(movieLite);
-            }
             
-            session.close();
-            return basicMovies;
+        Query query = session.createQuery(
+            "select movie " + 
+            "from Movie as movie, ToWatch as toWatch " + 
+            "where :User_login = toWatch.User_login " + 
+            "and movie.idMovie = toWatch.Movie_idMovie "
+        ).setParameter("User_login", User_login);
+
+        List<Movie> movies = query.list();
+
+        List<MovieBasicInformations> basicMovies = new ArrayList<>();
+        for(Movie movie : movies) {
+            
+            List<String> genres = getMovieGenres(movie.getIdMovie(), session);
+            
+            MovieBasicInformations movieLite = new MovieBasicInformations(
+                movie.getIdMovie(), movie.getTitle(), movie.getDateOfPremiere(), 
+                movie.getPictureUrl(), genres);
+            basicMovies.add(movieLite);
+        }
+        
+        session.close();
+        return basicMovies;
+    }
+
+    @CrossOrigin
+    @RequestMapping("/allBasicArtists")
+    @ResponseBody
+    public List<BasicArtist> getAllBasicArtists() {
+        Session session = sessionFactory.openSession();
+
+        Query<Artist> query = session.createQuery("from Artist");
+        List<Artist> list = query.list();
+        session.close();
+
+        List<BasicArtist> basicArtists = new ArrayList<>();
+
+        for (Artist artist : list) {
+            BasicArtist basicArtist = new BasicArtist();
+            basicArtist.setName(artist.getName());
+            basicArtist.setSurname(artist.getSurname());
+            basicArtist.setPhotoUrl(artist.getPictureUrl());
+
+            basicArtists.add(basicArtist);
         }
 
 
+        return basicArtists;
+    }
+       
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
