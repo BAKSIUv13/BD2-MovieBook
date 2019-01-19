@@ -1,11 +1,14 @@
 package pl.moviebook;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -827,18 +830,15 @@ public class BackendApplication {
         return "Successful";
     }
 
-    @CrossOrigin
-    @RequestMapping("/updateArtist/{idArtist}/{name}/{surname}/{origin}"
-                    + "/{dayOfBirth}/{monthOfBirth}/{yearOfBirth}/{pictureUrl}")
+    @RequestMapping(value = "/updateArtist/{idArtist}/{name}/{surname}/{origin}"
+                    + "/{date}/{pictureUrl}")
     @ResponseBody
     public String addArtist(
         @PathVariable("idArtist") int idArtist,
         @PathVariable("name") String name,
         @PathVariable("surname") String surname,
         @PathVariable("origin") String origin,
-        @PathVariable("dayOfBirth") int dayOfBirth,
-        @PathVariable("monthOfBirth") int monthOfBirth,
-        @PathVariable("yearOfBirth") int yearOfBirth,
+        @PathVariable("date") String date,
         @PathVariable("pictureUrl") String pictureUrl) {
         
         Session session = sessionFactory.openSession();
@@ -846,14 +846,26 @@ public class BackendApplication {
         session.beginTransaction();
         
         Artist artist = new Artist();
-        artist.setIdArtist(idArtist);
+        if(idArtist >= 0)
+        	artist.setIdArtist(idArtist);
+        
         artist.setName(name);
         artist.setSurname(surname);
         artist.setOrigin(origin);
-        artist.setDate(getDateRiGCZFormat(yearOfBirth, 
-                                          monthOfBirth, 
-                                          dayOfBirth));
-        artist.setPictureUrl(pictureUrl);
+        
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
+        try {
+			artist.setDate(new Date(df.parse(date).getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+
+        try {
+			artist.setPictureUrl(URLDecoder.decode(pictureUrl, "UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
 
         session.saveOrUpdate(artist);
 
