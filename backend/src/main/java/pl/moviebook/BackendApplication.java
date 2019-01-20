@@ -246,7 +246,7 @@ public class BackendApplication {
         
         List<TransmitionOnStation> transmitions = new ArrayList<>();
         Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
-                + "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id "
+                + "INNER JOIN Movie ON TvProgram.Movie_idMovie = Movie.idMovie WHERE TvProgram.Station_name = :id AND `TvProgram`.dateTime >= CURDATE()"
                 + "GROUP BY TvProgram.dateTime ASC")
                 .setParameter("id", station);
         List<Object[]> transmitionsSQLResult = (List<Object[]>) querySQL.list();
@@ -278,7 +278,7 @@ public class BackendApplication {
         
         List<FilmInCinema> filmsInCinema = new ArrayList<>();
         Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
-                + "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id "
+                + "INNER JOIN Movie ON `Show`.Movie_idMovie = Movie.idMovie WHERE `Show`.Cinema_idCinema = :id AND `Show`.dateTime >= CURDATE()"
                 + "GROUP BY `Show`.dateTime ASC")
                 .setParameter("id", idCinema);
         List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
@@ -390,7 +390,8 @@ public class BackendApplication {
         
         List<ShowWithCinema> showsWithCinema = new ArrayList<>();
         querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Cinema.name, Cinema.city FROM `Show` "
-                + "INNER JOIN Cinema ON `Show`.Cinema_idCinema = Cinema.idCinema WHERE `Show`.Movie_idMovie = :id")
+                + "INNER JOIN Cinema ON `Show`.Cinema_idCinema = Cinema.idCinema WHERE `Show`.Movie_idMovie = :id "
+                + "AND `Show`.dateTime >= CURDATE()")
                 .setParameter("id", movie.getIdMovie());
         List<Object[]> showsSQLResult = (List<Object[]>) querySQL.list();
         
@@ -399,7 +400,7 @@ public class BackendApplication {
         }
         
         List<TvProgramBasicInformations> transmitions = new ArrayList<>();
-        querySQL = session.createSQLQuery("SELECT TvProgram.Station_name, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id")
+        querySQL = session.createSQLQuery("SELECT TvProgram.Station_name, TvProgram.dateTime FROM TvProgram WHERE Movie_idMovie = :id AND `TvProgram`.dateTime >= CURDATE()")
                 .setParameter("id", movie.getIdMovie());
         
         List<Object[]> transmitionsSQLResult = querySQL.list();
@@ -834,7 +835,7 @@ public class BackendApplication {
     
     }
     
-    // ok
+    // unused
     @CrossOrigin
     @RequestMapping("/updateShow/{idShow}/{day}/{month}/{year}/"
                     + "{Cinema_idCinema}/{Movie_idMovie}")
@@ -852,7 +853,7 @@ public class BackendApplication {
         
         Show show = new Show();
         show.setIdShow(idShow);
-        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        //show.setDateTime(getDateRiGCZFormat(year, month, day));
         show.setCinema_idCinema(Cinema_idCinema);
         show.setMovie_idMovie(Movie_idMovie);
 
@@ -868,6 +869,7 @@ public class BackendApplication {
         return "Successful";
     }
     
+    //unused
     // not idArtist because of autoincrement
     @CrossOrigin
     @RequestMapping("/addArtist/{name}/{surname}/{origin}"
@@ -908,13 +910,10 @@ public class BackendApplication {
     }
     
     
-    @RequestMapping("/addShow/{day}/{month}/{year}/"
-                + "{Cinema_idCinema}/{Movie_idMovie}")
+    @RequestMapping("/addShow/{dateTime}/{Cinema_idCinema}/{Movie_idMovie}")
     @ResponseBody
     public String addShow(
-        @PathVariable("day") int day,
-        @PathVariable("month") int month,
-        @PathVariable("year") int year,
+        @PathVariable("dateTime") long dateTime,
         @PathVariable("Cinema_idCinema") int Cinema_idCinema,
         @PathVariable("Movie_idMovie") int Movie_idMovie) {
         
@@ -922,7 +921,7 @@ public class BackendApplication {
         session.beginTransaction();
         
         Show show = new Show();
-        show.setDateTime(getDateRiGCZFormat(year, month, day));
+        show.setDateTime(new Timestamp(dateTime));
         show.setCinema_idCinema(Cinema_idCinema);
         show.setMovie_idMovie(Movie_idMovie);
 
@@ -1144,7 +1143,7 @@ public class BackendApplication {
     @ResponseBody
     public String addTvProgram(
         @PathVariable("Station_name") String station,
-        @PathVariable("dateTime") String dateTime,
+        @PathVariable("dateTime") long dateTime,
         @PathVariable("Movie_idMovie") int Movie_idMovie) {
         
         Session session = sessionFactory.openSession();
@@ -1153,17 +1152,35 @@ public class BackendApplication {
         TvProgram tvProgram = new TvProgram();
         tvProgram.setStation(station);
         
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-			tvProgram.setDateTime(new Timestamp(df.parse(dateTime).getTime()));
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+		tvProgram.setDateTime(new Timestamp(dateTime));
         
         tvProgram.setIdMovie(Movie_idMovie);
         
         session.beginTransaction();
         session.save(tvProgram);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/addStation/{name}")
+    @ResponseBody
+    public String addStation(
+    		@PathVariable("name") String name) {
+    	
+    	Station station = new Station();
+    	station.setName(name);
+    	
+    	Session session = sessionFactory.openSession();
+    	session.beginTransaction();
+    	session.save(station);
         try{
             session.getTransaction().commit();
         } catch(Exception e) {
@@ -1203,15 +1220,26 @@ public class BackendApplication {
     @CrossOrigin
     @RequestMapping("/getAllIssues")
     @ResponseBody
-    public List<Genre> getAllIssues(){
+    public List<IssueWithExtensions> getAllIssues(){
     	Session session = sessionFactory.openSession();
     	
-        Query<Genre> query = session.createQuery("from Issue");
-        List<Genre> list = query.list();
+        Query<Issue> query = session.createQuery("from Issue");
+        List<Issue> list = query.list();
+        List<IssueWithExtensions> listOfIssues = new ArrayList<>();
+        
+        for(Issue issue : list ) {
+        	Query querySQL = session.createSQLQuery("SELECT title From Movie WHERE idMovie = :id")
+        			.setParameter("id", issue.getIdMovie());
+        	
+        	String title = (String) querySQL.getSingleResult();
+        	
+        	listOfIssues.add(new IssueWithExtensions(issue.getIdIssue(), issue.getDescription(), issue.getIdMovie(),
+        			issue.getIssueDateTime().getTime(), issue.getLogin(), title));
+        }
         
         session.close();
 
-        return list;
+        return listOfIssues;
     } 
 
 
