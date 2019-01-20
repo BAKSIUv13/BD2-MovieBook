@@ -1031,7 +1031,7 @@ public class BackendApplication {
         
         return "Successful";
     }
-
+    @CrossOrigin
     @RequestMapping("/addTvProgram/{Station_name}/{dateTime}/{Movie_idMovie}")
     @ResponseBody
     public String addTvProgram(
@@ -1056,6 +1056,31 @@ public class BackendApplication {
         
         session.beginTransaction();
         session.save(tvProgram);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/addCinema/{name}/{city}")
+    @ResponseBody
+    public String addCinema(
+        @PathVariable("name") String name,
+        @PathVariable("city") String city) {
+        
+        Cinema cinema = new Cinema();
+        cinema.setName(name);
+        cinema.setCity(city);
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.save(cinema);
         try{
             session.getTransaction().commit();
         } catch(Exception e) {
