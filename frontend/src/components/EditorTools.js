@@ -18,6 +18,9 @@ const EditorTools = (props) => {
            <span>
             <Button size="large" component={Link} to="/showIssues" variant="outlined" >Show Issues</Button>
            </span> 
+           <span>
+            <Button size="large" component={Link} to="/addArtist" variant="outlined" >Add Artist</Button>
+           </span> 
           </div>
       }
     </div>
