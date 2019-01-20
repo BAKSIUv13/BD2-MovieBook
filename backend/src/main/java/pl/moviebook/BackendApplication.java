@@ -1106,6 +1106,30 @@ public class BackendApplication {
         return list;
     } 
 
+
+    @CrossOrigin
+    @RequestMapping("/removeIssue/{idIssue}")
+    @ResponseBody
+    public String removeToWatch(
+        @PathVariable("idIssue") int idIssue) {
+        
+        Issue issue = new Issue();
+        issue.setIdIssue(idIssue);
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.delete(issue);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        return "Successful";
+
+
+    }    
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
