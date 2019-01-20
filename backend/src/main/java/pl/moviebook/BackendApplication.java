@@ -1092,6 +1092,20 @@ public class BackendApplication {
         return "Successful";
     }
 
+    @CrossOrigin
+    @RequestMapping("/getAllIssues")
+    @ResponseBody
+    public List<Genre> getAllIssues(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query<Genre> query = session.createQuery("from Issue");
+        List<Genre> list = query.list();
+        
+        session.close();
+
+        return list;
+    } 
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
