@@ -13,6 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.persistence.NoResultException;
+
 import java.util.Calendar;
 
 import org.hibernate.query.Query;
@@ -509,47 +512,152 @@ public class BackendApplication {
 
     @CrossOrigin
     @RequestMapping("/addMovie/{title}/{language}/" +
-                    "{dayOfPremiere}/{monthOfPremiere}/{yearOfPremiere}/" +
-                    "{boxOffice}/{country}/{description}/{pictureUrl}")
+                    "{date}/" +
+                    "{boxOffice}/{country}/{description}/{pictureUrl}/{genres}")
     @ResponseBody
-    public String addMovie(
+    public int addMovie(
         @PathVariable("title") String title,
         @PathVariable("language") String language,
-        @PathVariable("dayOfPremiere") int dayOfPremiere,
-        @PathVariable("monthOfPremiere") int monthOfPremiere,
-        @PathVariable("yearOfPremiere") int yearOfPremiere,
+        @PathVariable("date") String date,
         @PathVariable("boxOffice") int boxOffice,
         @PathVariable("country") String country,
         @PathVariable("description") String description,
-        @PathVariable("pictureUrl") String pictureUrl) {
+        @PathVariable("pictureUrl") String pictureUrl,
+        @PathVariable("genres") String genres) {
             
         Session session = sessionFactory.openSession();
 
         session.beginTransaction();
 
         Movie movie = new Movie();
-
+        
+        String changedUrl = pictureUrl.replace("_", "%");
+        
         movie.setTitle(title);
         movie.setLanguage(language);
-        movie.setDateOfPremiere(getDateRiGCZFormat(yearOfPremiere, 
-            monthOfPremiere, dayOfPremiere));
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
+        try {
+			movie.setDateOfPremiere(new Date(df.parse(date).getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+
+        try {
+        	System.out.println(changedUrl);
+			movie.setPictureUrl(URLDecoder.decode(changedUrl, "UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
         movie.setBoxOffice(boxOffice);
         movie.setCountry(country);
         movie.setDescription(description);
-        movie.setPictureUrl(pictureUrl);
             
         session.save(movie);
         try{
             session.getTransaction().commit();
         } catch(Exception e) {
             session.close();
-            return "Unsuccessful";
+            return -1;
+        }
+        Query query = session.createSQLQuery("SELECT idMovie FROM Movie WHERE title= :title"
+        		+ " AND description = :d")
+        		.setParameter("title", title)
+        		.setParameter("d", description);
+        int movieId = (int) query.getSingleResult();
+        
+        String[] splittedGenres = genres.split("_");
+        
+        for(String genre : splittedGenres) {
+        	session.beginTransaction();
+        	Movie_has_Genre g = new Movie_has_Genre();
+        	g.setGenre_name(genre);
+        	g.setMovie_idMovie(movieId);
+        	session.save(g);
+        	
+            try{
+                session.getTransaction().commit();
+            } catch(Exception e) {
+                session.close();
+                return -1;
+            }
+        	
         }
         
         session.close();
         
-        return "Successful";
+        return movieId;
 
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/addArtistTypeAndAssignToFilm/{idArtist}/{role}/{types}/{idMovie}")
+    @ResponseBody
+    public String addArtisttypeAndAssignToFilm(
+    		@PathVariable("idArtist") int idArtist,
+    		@PathVariable("role") String role,
+    		@PathVariable("types") String types,
+    		@PathVariable("idMovie") int idMovie){
+    	Session session = sessionFactory.openSession();
+    	
+    	System.out.println(idArtist + role + types + idMovie);
+    	
+    	String[] splittedTypes = types.split("_");
+    	
+    	for(String type : splittedTypes) {
+        	Query query = session.createSQLQuery("SELECT id FROM Artist_has_ArtistType WHERE Artist_idArtist = :id AND ArtistType_name = :type")
+        			.setParameter("id", idArtist)
+        			.setParameter("type", type);
+        	Integer id = null;
+        	
+        	try {
+        	id = (Integer) query.getSingleResult();
+        	} catch (NoResultException e) {}
+        	
+        	if(id == null) {
+        		Artist_has_ArtistType artistType = new Artist_has_ArtistType();
+        		artistType.setIdArtist(idArtist);
+        		artistType.setType(type);
+        		session.clear();
+        		session.beginTransaction();
+                session.save(artistType);
+                try{
+                    session.getTransaction().commit();
+                } catch(Exception e) {
+                    session.close();
+                    return "Unsuccessful";
+                }
+                
+                query = session.createSQLQuery("SELECT id FROM Artist_has_ArtistType"
+                		+ " WHERE Artist_idArtist = :id AND ArtistType_name = :name")
+                		.setParameter("id", idArtist)
+                		.setParameter("name", type);
+                int newId = (int) query.getSingleResult();
+                
+                id = newId;
+        	} 
+        	
+        	session.beginTransaction();
+        	Movie_has_Artist movieHasArtist = new Movie_has_Artist();
+        	movieHasArtist.setIdArtistType(id);
+        	movieHasArtist.setIdMovie(idMovie);
+        	String roleToSet = role;
+        	if(role.equals("null") || !type.equals("Actor"))
+        		roleToSet = null;
+        	movieHasArtist.setRole(roleToSet);
+        	session.save(movieHasArtist);
+            try{
+                session.getTransaction().commit();
+            } catch(Exception e) {
+                session.close();
+                return "Unsuccessful";
+            }
+    	}
+    	
+        session.close();
+    	
+    	return "Successful";
+    	
     }
 
     @CrossOrigin

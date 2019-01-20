@@ -45,6 +45,8 @@
       <mapping class="pl.moviebook.dbEntities.Like"/>
       <mapping class="pl.moviebook.dbEntities.Station"/>
       <mapping class="pl.moviebook.dbEntities.Show"/>
+      <mapping class="pl.moviebook.dbEntities.Movie_has_Artist"/>
+      <mapping class="pl.moviebook.dbEntities.Artist_has_ArtistType"/>
       
 
    </session-factory>
