@@ -2,6 +2,7 @@ package pl.moviebook.dbEntities;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ public class Show implements Serializable {
 	private int idShow;
 	
 	@Column(name="dateTime")
-	private Date dateTime;
+	private Timestamp dateTime;
     
     @Column(name="Cinema_idCinema")
     private int Cinema_idCinema;
@@ -44,14 +45,14 @@ public class Show implements Serializable {
     /**
      * @return the dateTime
      */
-    public Date getDateTime() {
+    public Timestamp getDateTime() {
         return dateTime;
     }
 
     /**
      * @param dateTime the dateTime to set
      */
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
 
