@@ -18,7 +18,6 @@ import IssueDialog from '../components/IssueDialog'
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
 
 
 
@@ -224,6 +223,15 @@ class MovieContainer extends Component {
              })
       }
 
+      removeReview = (id) => {
+        axios.post(`${URL}/removeReview/${id}`)
+             .then( response => {
+                if(response.data ==="Successful") {
+                    this.props.movieDetail(this.props.match.params.id, this.props.match.params.title);
+                }
+             })
+      }
+
     render(){
         const actors = this.props.movies.movieDetail ? this.props.movies.movieDetail.artists.filter( artist => {
             return artist.artistType === "Actor";
@@ -254,7 +262,7 @@ class MovieContainer extends Component {
                         }} username={username} idMovie={idMovie} />
                     : null
                 }
-                <ReviewList username={username} callback={this.likeReview} reviews={reviews} />
+                <ReviewList removeReview={this.removeReview} status={this.props.login.status} username={username} callback={this.likeReview} reviews={reviews} />
             </div>
         );
     }

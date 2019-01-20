@@ -845,6 +845,8 @@ public class BackendApplication {
         
         session.beginTransaction();
         
+        String changedUrl = pictureUrl.replace("_", "%");
+        
         Artist artist = new Artist();
         if(idArtist >= 0)
         	artist.setIdArtist(idArtist);
@@ -862,7 +864,7 @@ public class BackendApplication {
 		}
 
         try {
-			artist.setPictureUrl(URLDecoder.decode(pictureUrl, "UTF-8"));
+			artist.setPictureUrl(URLDecoder.decode(changedUrl, "UTF-8"));
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}

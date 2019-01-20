@@ -23,7 +23,8 @@ import Account from './components/Account';
 import Artist from './components/Artist';
 import AddArtist from './components/AddArtistComponent';
 import IssuesList from './components/IssuesList';
-
+import AddCinemaComponent from './components/AddCinemaComponent';
+import AddTVStationComponent from './components/AddTVStationComponent';
 
 
 class App extends Component {
@@ -50,6 +51,8 @@ class App extends Component {
           <Route exact path="/artists/:id" component={Artist} />
           <Route exact path="/addArtist/" component={AddArtist} />
           <Route exact path="/showIssues" component={IssuesList} />
+          <Route exact path="/addCinema" component={AddCinemaComponent} />
+          <Route exact path="/addStation" component={AddTVStationComponent} />
 
           
 
