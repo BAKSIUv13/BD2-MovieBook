@@ -952,7 +952,35 @@ public class BackendApplication {
         return "Successful";
 
     }
+    
+    @CrossOrigin
+    @RequestMapping("/getAllGenres")
+    @ResponseBody
+    public List<Genre> getGenres(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query<Genre> query = session.createQuery("from Genre");
+        List<Genre> list = query.list();
+        
+        session.close();
 
+        return list;
+    }
+
+    @CrossOrigin
+    @RequestMapping("/getAllArtistTypes")
+    @ResponseBody
+    public List<String> getArtistTypes(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query query = session.createSQLQuery("SELECT * FROM ArtistType");
+        List<String> list = query.list();
+        
+        session.close();
+
+        return list;
+    }
+    
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
