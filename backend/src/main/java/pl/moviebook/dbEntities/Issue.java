@@ -16,6 +16,9 @@ public class Issue implements Serializable {
 	private static final long serialVersionUID = 15503L;
 
 	@Id
+	@Column(name="idIssue")
+	private int idIssue;
+
 	@Column(name="description")
 	private String description;
 	
@@ -58,5 +61,19 @@ public class Issue implements Serializable {
 
 	public void setIdMovie(int idMovie) {
 		this.idMovie = idMovie;
+	}
+
+	/**
+	 * @return the idIssue
+	 */
+	public int getIdIssue() {
+		return idIssue;
+	}
+
+	/**
+	 * @param idIssue the idIssue to set
+	 */
+	public void setIdIssue(int idIssue) {
+		this.idIssue = idIssue;
 	}
 }

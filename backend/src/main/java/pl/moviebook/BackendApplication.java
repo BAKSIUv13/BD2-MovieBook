@@ -434,7 +434,7 @@ public class BackendApplication {
         user.setLogin(login);
         user.setPassword(password);
         user.setUserType("User");
-        session.save(user);
+        session.saveOrUpdate(user);
         try{
             session.getTransaction().commit();
         } catch(Exception e) {
@@ -1088,7 +1088,156 @@ public class BackendApplication {
 
         return list;
     }
+
+    @CrossOrigin
+    @RequestMapping("/getAllUsers")
+    @ResponseBody
+    public List<Genre> getAllUsers(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query<Genre> query = session.createQuery("from User");
+        List<Genre> list = query.list();
+        
+        session.close();
+
+        return list;
+    } 
+
+    @CrossOrigin
+    @RequestMapping("/setUserType/{login}/{UserType_name}")
+    @ResponseBody
+    public String setUserType(
+        @PathVariable("login") String login,
+        @PathVariable("UserType_name") String UserType_name) {
+        Session session = sessionFactory.openSession();
+
+        Query query = session.createQuery(
+            "select user " + 
+            "from User as user " + 
+            "where user.login = :login "
+        ).setParameter("login", login);
+
+        User user = (User)query.getSingleResult();
+        session.close();
+
+        session = sessionFactory.openSession();
+        session.beginTransaction();
+        
+        User new_user = new User();
+        new_user.setLogin(login);
+        new_user.setUserType(UserType_name);
+        new_user.setPassword(user.getPassword());
+        
+        session.saveOrUpdate(new_user);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        
+        
+        return "Successful";
+    }
+    @CrossOrigin
+    @RequestMapping("/addTvProgram/{Station_name}/{dateTime}/{Movie_idMovie}")
+    @ResponseBody
+    public String addTvProgram(
+        @PathVariable("Station_name") String station,
+        @PathVariable("dateTime") String dateTime,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        
+        
+        TvProgram tvProgram = new TvProgram();
+        tvProgram.setStation(station);
+        
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+			tvProgram.setDateTime(new Timestamp(df.parse(dateTime).getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+        
+        tvProgram.setIdMovie(Movie_idMovie);
+        
+        session.beginTransaction();
+        session.save(tvProgram);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
     
+    @CrossOrigin
+    @RequestMapping("/addCinema/{name}/{city}")
+    @ResponseBody
+    public String addCinema(
+        @PathVariable("name") String name,
+        @PathVariable("city") String city) {
+        
+        Cinema cinema = new Cinema();
+        cinema.setName(name);
+        cinema.setCity(city);
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.save(cinema);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
+    @CrossOrigin
+    @RequestMapping("/getAllIssues")
+    @ResponseBody
+    public List<Genre> getAllIssues(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query<Genre> query = session.createQuery("from Issue");
+        List<Genre> list = query.list();
+        
+        session.close();
+
+        return list;
+    } 
+
+
+    @CrossOrigin
+    @RequestMapping("/removeIssue/{idIssue}")
+    @ResponseBody
+    public String removeToWatch(
+        @PathVariable("idIssue") int idIssue) {
+        
+        Issue issue = new Issue();
+        issue.setIdIssue(idIssue);
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.delete(issue);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        return "Successful";
+
+
+    }    
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
