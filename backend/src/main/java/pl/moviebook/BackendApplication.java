@@ -1032,6 +1032,41 @@ public class BackendApplication {
         return "Successful";
     }
 
+    @RequestMapping("/addTvProgram/{Station_name}/{dateTime}/{Movie_idMovie}")
+    @ResponseBody
+    public String addTvProgram(
+        @PathVariable("Station_name") String station,
+        @PathVariable("dateTime") String dateTime,
+        @PathVariable("Movie_idMovie") int Movie_idMovie) {
+        
+        Session session = sessionFactory.openSession();
+        
+        
+        TvProgram tvProgram = new TvProgram();
+        tvProgram.setStation(station);
+        
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+			tvProgram.setDateTime(new Timestamp(df.parse(dateTime).getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+        
+        tvProgram.setIdMovie(Movie_idMovie);
+        
+        session.beginTransaction();
+        session.save(tvProgram);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        
+        return "Successful";
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
