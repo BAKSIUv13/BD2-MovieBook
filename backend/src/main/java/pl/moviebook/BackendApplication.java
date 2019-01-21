@@ -1396,6 +1396,44 @@ public class BackendApplication {
         session.close();
         return "Successful";
     }
+    
+    @CrossOrigin
+    @RequestMapping("/getReviewsStatistics/{from}/{to}")
+    @ResponseBody
+    public List<ReviewsStatistics> getReviewsStatistics(
+    		@PathVariable("from") String from,
+    		@PathVariable("to") String to) {
+    	Session session = connection.openSession();   	
+    	
+    	Query query = session.createSQLQuery("SELECT r.idReview, r.content, r.date, r.User_login, COUNT(*), m.idMovie, m.title " + 
+    			"FROM `Like` as l " + 
+    			"INNER JOIN Review as r ON l.Review_idReview = r.idReview " + 
+    			"INNER JOIN Movie as m ON r.Movie_idMovie = m.idMovie " + 
+    			"WHERE r.date >= DATE(:from1) AND r.date <= DATE(:to1) " + 
+    			"AND l.date >= DATE(:from2) AND l.date <= DATE(:to2) " + 
+    			"GROUP BY r.idReview")
+    			.setParameter("from1", from)
+    			.setParameter("to1", to)
+    			.setParameter("from2", from)
+    			.setParameter("to2", to);
+    	
+    	List<Object[]> results = query.list();
+    	
+    	List<ReviewsStatistics> statistics = new ArrayList<>();
+    	
+    	for(Object[] row : results ) {
+    		
+    		long creationDate = ((Date) row[2]).getTime();
+    		
+    		statistics.add(new ReviewsStatistics((int) row[0], (String) row[1], creationDate,
+    				(String) row[3], ((BigInteger) row[4]).intValue(), (int) row[5], (String) row[6]));
+    	}
+    	
+    	return statistics;
+    	
+    }
+    
+    
 
     public static void main(String[] args) {
         
