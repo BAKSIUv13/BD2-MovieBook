@@ -1361,8 +1361,6 @@ public class BackendApplication {
         }
         session.close();
         return "Successful";
-
-
     }
     
     @CrossOrigin
@@ -1378,6 +1376,31 @@ public class BackendApplication {
 
         return list;
     } 
+
+    // BAKSIUv13 
+    // 21.01.2018
+    @CrossOrigin
+    @RequestMapping("/removeUser/{login}")
+    @ResponseBody
+    public String removeUser(
+        @PathVariable("login") String login) {
+        
+        User user = new User();
+        user.setLogin(login);
+        
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.delete(user);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        return "Successful";
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
