@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -16,11 +15,8 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import java.util.Calendar;
-
 import org.hibernate.query.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,7 +34,7 @@ import pl.moviebook.otherEntities.*;
 @SpringBootApplication
 public class BackendApplication {
 
-    SessionFactory sessionFactory = Connection.getSessionFactory();
+    Connection connection = new Connection();
 
     private Date getDateRiGCZFormat(int year, int month, int day)
 	{
@@ -68,7 +64,7 @@ public class BackendApplication {
     @ResponseBody
     public String addToWatch(@PathVariable("Movie_idMovie") int idMovie,
                         @PathVariable("User_login") String User_login) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         ToWatch towatch = new ToWatch();
         towatch.setMovie_idMovie(idMovie);
@@ -89,7 +85,7 @@ public class BackendApplication {
     @ResponseBody
     public String removeToWatch(@PathVariable("Movie_idMovie") int idMovie,
                         @PathVariable("User_login") String User_login) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         ToWatch towatch = new ToWatch();
         towatch.setMovie_idMovie(idMovie);
@@ -113,7 +109,7 @@ public class BackendApplication {
     public String addIssue(@PathVariable("Movie_idMovie") int idMovie,
                         @PathVariable("User_login") String User_login,
                         @PathVariable("description") String description) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         Issue issue = new Issue();
         issue.setIdMovie(idMovie);
@@ -138,7 +134,7 @@ public class BackendApplication {
     @RequestMapping("/getFilmsToWatch/{login}")
     @ResponseBody
     public List<MovieBasicInformations> getFilmsToWatch(@PathVariable("login") String login) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         Query query = session.createSQLQuery("SELECT ToWatch.Movie_idMovie From ToWatch WHERE ToWatch.User_login = :login")
                 .setParameter("login", login);
         
@@ -163,7 +159,7 @@ public class BackendApplication {
     public String addReview(@PathVariable("Movie_idMovie") int idMovie,
                         @PathVariable("User_login") String User_login,
                         @PathVariable("content") String content) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         Review review = new Review();
         review.setIdMovie(idMovie);
@@ -187,7 +183,7 @@ public class BackendApplication {
     @RequestMapping("/allArtists")
     @ResponseBody
     public List<Artist> getAllArtists() {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         // HQL syntax - createQuery
         // SQL syntax - createSQLQery
@@ -204,7 +200,7 @@ public class BackendApplication {
     public String login(@PathVariable("login") String login,
                         @PathVariable("password") String password) {
 
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Query query = session.createSQLQuery(
             "SELECT UserType_name FROM User " +
@@ -228,7 +224,7 @@ public class BackendApplication {
     @RequestMapping("/allStations")
     @ResponseBody
     public List<Station> getAllStations() {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Query<Station> query = session.createQuery("from Station");
         List<Station> list = query.list();
@@ -242,7 +238,7 @@ public class BackendApplication {
     @RequestMapping("/getTransmitions/{station}")
     @ResponseBody
     public List<TransmitionOnStation> getTransmitionOnStation(@PathVariable("station") String station) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         List<TransmitionOnStation> transmitions = new ArrayList<>();
         Query querySQL = session.createSQLQuery("SELECT TvProgram.dateTime, Movie.title, Movie.idMovie FROM TvProgram "
@@ -261,7 +257,7 @@ public class BackendApplication {
     @RequestMapping("/allCinemas")
     @ResponseBody
     public List<Artist> getAllCinemas() {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Query<Artist> query = session.createQuery("from Cinema");
         List<Artist> list = query.list();
@@ -274,7 +270,7 @@ public class BackendApplication {
     @RequestMapping("/getShows/{idCinema}")
     @ResponseBody
     public List<FilmInCinema> getFilmInCinema(@PathVariable("idCinema") int idCinema) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         List<FilmInCinema> filmsInCinema = new ArrayList<>();
         Query querySQL = session.createSQLQuery("SELECT `Show`.dateTime, Movie.title, Movie.idMovie FROM `Show` "
@@ -293,7 +289,7 @@ public class BackendApplication {
     @RequestMapping("/getCinemaName/{idCinema}")
     @ResponseBody
     public String getCinemaName(@PathVariable("idCinema") int idCinema) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         Query querySQL = session.createSQLQuery("SELECT Cinema.name, Cinema.city FROM Cinema WHERE Cinema.idCinema = :id")
                 .setParameter("id", idCinema);
@@ -308,7 +304,7 @@ public class BackendApplication {
     @RequestMapping("/allMovies")
     @ResponseBody
     public List<MovieBasicInformations> getAllMovies() {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         Query<Movie> query = session.createQuery("from Movie");
         List<Movie> result = query.list();
@@ -340,7 +336,7 @@ public class BackendApplication {
     @RequestMapping("/movie/{idMovie}")
     @ResponseBody
     public MovieFullInformations getMovie(@PathVariable("idMovie") int idMovie) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Movie movie;
 
@@ -429,7 +425,7 @@ public class BackendApplication {
     @ResponseBody
     public String register(@PathVariable("login") String login,
                         @PathVariable("password") String password) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         User user = new User();
         user.setLogin(login);
@@ -455,7 +451,7 @@ public class BackendApplication {
         @PathVariable("Movie_idMovie") int Movie_idMovie,
         @PathVariable("rate") int rate) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         session.beginTransaction();
 
@@ -485,7 +481,7 @@ public class BackendApplication {
     public List<MovieBasicInformations> getAllMoviesOfTheGenre(
         @PathVariable("name") String name) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
     
         Query query = session.createQuery(
             "select movie " + 
@@ -526,7 +522,7 @@ public class BackendApplication {
         @PathVariable("pictureUrl") String pictureUrl,
         @PathVariable("genres") String genres) {
             
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         session.beginTransaction();
 
@@ -607,7 +603,7 @@ public class BackendApplication {
         @PathVariable("pictureUrl") String pictureUrl,
         @PathVariable("genres") String genres) {
             
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         session.beginTransaction();
 
@@ -686,7 +682,7 @@ public class BackendApplication {
     @ResponseBody
     public String beforeUpdateArtistTypeAndAssignToFilm(
     		@PathVariable("idMovie") int idMovie) {
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
     	List<Integer> Artist_has_ArtistType_toDelete = new ArrayList<>();
     	
@@ -746,7 +742,7 @@ public class BackendApplication {
     		@PathVariable("role") String role,
     		@PathVariable("types") String types,
     		@PathVariable("idMovie") int idMovie){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
     	String[] splittedTypes = types.split("_");
     	
@@ -813,7 +809,7 @@ public class BackendApplication {
         @PathVariable("Review_idReview") int Review_idReview,
         @PathVariable("User_login") String User_login) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         session.beginTransaction();
         
@@ -843,7 +839,7 @@ public class BackendApplication {
         @PathVariable("Review_idReview") int Review_idReview,
         @PathVariable("User_login") String User_login) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         session.beginTransaction();
         
@@ -870,7 +866,7 @@ public class BackendApplication {
     public List<MovieBasicInformations> getToWatchList(
         @PathVariable("User_login") String User_login) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
     
             
         Query query = session.createQuery(
@@ -901,7 +897,7 @@ public class BackendApplication {
     @RequestMapping("/allBasicArtists")
     @ResponseBody
     public List<BasicArtist> getAllBasicArtists() {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Query<Artist> query = session.createQuery("from Artist");
         List<Artist> list = query.list();
@@ -929,7 +925,7 @@ public class BackendApplication {
     public ArtistFullInformations getArtist(
         @PathVariable("idArtist") int idArtist) {
         
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Artist artist;
 
@@ -993,7 +989,7 @@ public class BackendApplication {
         @PathVariable("Cinema_idCinema") int Cinema_idCinema,
         @PathVariable("Movie_idMovie") int Movie_idMovie) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         
         Show show = new Show();
@@ -1029,7 +1025,7 @@ public class BackendApplication {
         @PathVariable("yearOfBirth") int yearOfBirth,
         @PathVariable("pictureUrl") String pictureUrl) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         session.beginTransaction();
         
@@ -1062,7 +1058,7 @@ public class BackendApplication {
         @PathVariable("Cinema_idCinema") int Cinema_idCinema,
         @PathVariable("Movie_idMovie") int Movie_idMovie) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         
         Show show = new Show();
@@ -1093,7 +1089,7 @@ public class BackendApplication {
         @PathVariable("date") String date,
         @PathVariable("pictureUrl") String pictureUrl) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         session.beginTransaction();
         
@@ -1140,7 +1136,7 @@ public class BackendApplication {
     public String addReview(
         @PathVariable("idReview") int idReview){
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         
         Review review = new Review();
@@ -1162,7 +1158,7 @@ public class BackendApplication {
     @RequestMapping("/getAllGenres")
     @ResponseBody
     public List<Genre> getGenres(){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Query<Genre> query = session.createQuery("from Genre");
         List<Genre> list = query.list();
@@ -1176,7 +1172,7 @@ public class BackendApplication {
     @RequestMapping("/getAllArtistTypes")
     @ResponseBody
     public List<String> getArtistTypes(){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Query query = session.createSQLQuery("SELECT * FROM ArtistType");
         List<String> list = query.list();
@@ -1190,7 +1186,7 @@ public class BackendApplication {
     @RequestMapping("/getAllUsers")
     @ResponseBody
     public List<Genre> getAllUsers(){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Query<Genre> query = session.createQuery("from User");
         List<Genre> list = query.list();
@@ -1206,7 +1202,7 @@ public class BackendApplication {
     public String setUserType(
         @PathVariable("login") String login,
         @PathVariable("UserType_name") String UserType_name) {
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
 
         Query query = session.createQuery(
             "select user " + 
@@ -1217,7 +1213,7 @@ public class BackendApplication {
         User user = (User)query.getSingleResult();
         session.close();
 
-        session = sessionFactory.openSession();
+        session = connection.openSession();
         session.beginTransaction();
         
         User new_user = new User();
@@ -1244,7 +1240,7 @@ public class BackendApplication {
         @PathVariable("dateTime") long dateTime,
         @PathVariable("Movie_idMovie") int Movie_idMovie) {
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         
         
         TvProgram tvProgram = new TvProgram();
@@ -1276,7 +1272,7 @@ public class BackendApplication {
     	Station station = new Station();
     	station.setName(name);
     	
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	session.beginTransaction();
     	session.save(station);
         try{
@@ -1301,7 +1297,7 @@ public class BackendApplication {
         cinema.setName(name);
         cinema.setCity(city);
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         session.save(cinema);
         try{
@@ -1319,7 +1315,7 @@ public class BackendApplication {
     @RequestMapping("/getAllIssues")
     @ResponseBody
     public List<IssueWithExtensions> getAllIssues(){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Query<Issue> query = session.createQuery("from Issue");
         List<Issue> list = query.list();
@@ -1350,7 +1346,7 @@ public class BackendApplication {
         Issue issue = new Issue();
         issue.setIdIssue(idIssue);
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         session.delete(issue);
         try{
@@ -1369,7 +1365,7 @@ public class BackendApplication {
     @RequestMapping("/getAllUserTypes")
     @ResponseBody
     public List<String> getAllUserTypes(){
-    	Session session = sessionFactory.openSession();
+    	Session session = connection.openSession();
     	
         Query query = session.createSQLQuery("SELECT * FROM UserType");
         List<String> list = query.list();
