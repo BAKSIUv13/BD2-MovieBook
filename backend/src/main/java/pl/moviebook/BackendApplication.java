@@ -592,6 +592,153 @@ public class BackendApplication {
     }
     
     @CrossOrigin
+    @RequestMapping("/updateMovie/{id}/{title}/{language}/" +
+                    "{date}/" +
+                    "{boxOffice}/{country}/{description}/{pictureUrl}/{genres}")
+    @ResponseBody
+    public int updateMovie(
+    	@PathVariable("id") int idMovie,
+        @PathVariable("title") String title,
+        @PathVariable("language") String language,
+        @PathVariable("date") String date,
+        @PathVariable("boxOffice") int boxOffice,
+        @PathVariable("country") String country,
+        @PathVariable("description") String description,
+        @PathVariable("pictureUrl") String pictureUrl,
+        @PathVariable("genres") String genres) {
+            
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        Movie movie = new Movie();
+        
+        String changedUrl = pictureUrl.replace("_", "%");
+        
+        movie.setIdMovie(idMovie);
+        movie.setTitle(title);
+        movie.setLanguage(language);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
+        try {
+			movie.setDateOfPremiere(new Date(df.parse(date).getTime()));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+
+        try {
+        	System.out.println(changedUrl);
+			movie.setPictureUrl(URLDecoder.decode(changedUrl, "UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+        movie.setBoxOffice(boxOffice);
+        movie.setCountry(country);
+        movie.setDescription(description);
+            
+        session.update(movie);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return -1;
+        }
+        
+        session.beginTransaction();
+        Query query = session.createSQLQuery("DELETE FROM Movie_has_Genre WHERE Movie_idMovie = :id")
+        		.setParameter("id", idMovie);
+        
+        query.executeUpdate();
+        
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return -1;
+        }
+        
+        String[] splittedGenres = genres.split("_");
+        
+        for(String genre : splittedGenres) {
+        	session.beginTransaction();
+        	Movie_has_Genre g = new Movie_has_Genre();
+        	g.setGenre_name(genre);
+        	g.setMovie_idMovie(idMovie);
+        	session.save(g);
+        	
+            try{
+                session.getTransaction().commit();
+            } catch(Exception e) {
+                session.close();
+                return -1;
+            }
+        	
+        }
+        
+        session.close();
+        
+        return idMovie;
+
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/beforeUpdateArtistTypeAndAssignToFilm/{idMovie}")
+    @ResponseBody
+    public String beforeUpdateArtistTypeAndAssignToFilm(
+    		@PathVariable("idMovie") int idMovie) {
+    	Session session = sessionFactory.openSession();
+    	
+    	List<Integer> Artist_has_ArtistType_toDelete = new ArrayList<>();
+    	
+    	Query query = session.createSQLQuery("SELECT Artist_has_ArtistType_id FROM Movie_has_Artist WHERE Movie_idMovie = :id")
+    			.setParameter("id", idMovie);
+    	List<Integer> ArtistTypes_ids = query.list();
+    	
+    	for(Integer artistTypeId : ArtistTypes_ids) {
+    		query = session.createSQLQuery("SELECT Movie_idMovie FROM Movie_has_Artist WHERE "
+    				+ "Artist_has_ArtistType_id = :artistTypeId AND Movie_idMovie != :idMovie")
+    				.setParameter("artistTypeId", artistTypeId)
+    				.setParameter("idMovie", idMovie);
+    		List<Integer> result = new ArrayList<>();
+    		
+           	try {
+           		result = query.list();
+            } catch (NoResultException e) {}
+           	
+           	for(Integer r : result)
+           		System.out.println(r);
+           	
+           	if(result.isEmpty()) {
+           		System.out.println("Weszlo");
+           		Artist_has_ArtistType_toDelete.add(artistTypeId);
+           	}
+           	
+    	}
+    	session.beginTransaction();
+    	session.clear();
+    	
+    	query = session.createSQLQuery("DELETE FROM Movie_has_Artist WHERE Movie_idMovie = :id")
+         		.setParameter("id", idMovie);
+         
+        query.executeUpdate();
+        
+        for(Integer id : Artist_has_ArtistType_toDelete) {
+        	query = session.createSQLQuery("DELETE FROM Artist_has_ArtistType WHERE id = :id")
+             		.setParameter("id", id);
+        	query.executeUpdate();
+        }
+        
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        
+        return "Successful";
+    }
+    
+    @CrossOrigin
     @RequestMapping("/addArtistTypeAndAssignToFilm/{idArtist}/{role}/{types}/{idMovie}")
     @ResponseBody
     public String addArtisttypeAndAssignToFilm(
@@ -600,8 +747,6 @@ public class BackendApplication {
     		@PathVariable("types") String types,
     		@PathVariable("idMovie") int idMovie){
     	Session session = sessionFactory.openSession();
-    	
-    	System.out.println(idArtist + role + types + idMovie);
     	
     	String[] splittedTypes = types.split("_");
     	
@@ -987,53 +1132,6 @@ public class BackendApplication {
         session.close();
         
         return "Successful";
-    }
-    
-    @CrossOrigin
-    @RequestMapping("/updateMovie/{idMovie}/{title}/{language}/" +
-                    "{dayOfPremiere}/{monthOfPremiere}/{yearOfPremiere}/" +
-                    "{boxOffice}/{country}/{description}/{pictureUrl}")
-    @ResponseBody
-    public String updateMovie(
-        @PathVariable("idMovie") int idMovie,
-        @PathVariable("title") String title,
-        @PathVariable("language") String language,
-        @PathVariable("dayOfPremiere") int dayOfPremiere,
-        @PathVariable("monthOfPremiere") int monthOfPremiere,
-        @PathVariable("yearOfPremiere") int yearOfPremiere,
-        @PathVariable("boxOffice") int boxOffice,
-        @PathVariable("country") String country,
-        @PathVariable("description") String description,
-        @PathVariable("pictureUrl") String pictureUrl) {
-            
-        Session session = sessionFactory.openSession();
-
-        session.beginTransaction();
-
-        Movie movie = new Movie();
-        
-        movie.setIdMovie(idMovie);
-        movie.setTitle(title);
-        movie.setLanguage(language);
-        movie.setDateOfPremiere(getDateRiGCZFormat(yearOfPremiere, 
-            monthOfPremiere, dayOfPremiere));
-        movie.setBoxOffice(boxOffice);
-        movie.setCountry(country);
-        movie.setDescription(description);
-        movie.setPictureUrl(pictureUrl);
-            
-        session.saveOrUpdate(movie);
-        try{
-            session.getTransaction().commit();
-        } catch(Exception e) {
-            session.close();
-            return "Unsuccessful";
-        }
-        
-        session.close();
-        
-        return "Successful";
-
     }
     
     @CrossOrigin
