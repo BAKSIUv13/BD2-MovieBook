@@ -1388,7 +1388,7 @@ public class BackendApplication {
         User user = new User();
         user.setLogin(login);
         
-        Session session = sessionFactory.openSession();
+        Session session = connection.openSession();
         session.beginTransaction();
         session.delete(user);
         try{
