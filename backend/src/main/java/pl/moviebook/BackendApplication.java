@@ -1437,6 +1437,39 @@ public class BackendApplication {
     	
     }
     
+    @CrossOrigin
+    @RequestMapping("/getMoviesStatistics/{from}/{to}")
+    @ResponseBody
+    public List<MoviesStatistics> getMoviesStatistics(
+    		@PathVariable("from") String from,
+    		@PathVariable("to") String to) {
+    	Session session = connection.openSession();   	
+    	
+    	Query query = session.createSQLQuery("SELECT m.idMovie, m.title, m.dateOfPremiere, m.pictureUrl, COUNT( * ) " + 
+    			"FROM Rating AS r " +
+    			"INNER JOIN Movie AS m ON r.Movie_idMovie = m.idMovie " +
+    			"WHERE r.date >= DATE(:from) " +
+    			"AND r.date <= DATE(:to) " +
+    			"GROUP BY m.idMovie")
+    			.setParameter("from", from)
+    			.setParameter("to", to);
+    	
+    	List<Object[]> results = query.list();
+    	
+    	List<MoviesStatistics> statistics = new ArrayList<>();
+    	
+    	for(Object[] row : results ) {
+    		
+    		long premiereDate = ((Date) row[2]).getTime();
+    		
+    		statistics.add(new MoviesStatistics((int) row[0], (String) row[1], premiereDate,
+    				(String) row[3], ((BigInteger) row[4]).intValue()));
+    	}
+    	
+    	return statistics;
+    	
+    }
+    
     
 
     // BAKSIUv13 
