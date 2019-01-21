@@ -33,6 +33,12 @@ const EditorTools = (props) => {
            <span>
             <Button size="large" component={Link} to="/editMovie" variant="outlined" >Edit Movie</Button>
            </span> 
+           <span>
+            <Button size="large" component={Link} to="/addShow" variant="outlined" >Add Show</Button>
+           </span> 
+           <span>
+            <Button size="large" component={Link} to="/addTransmission" variant="outlined" >Add Transmission</Button>
+           </span> 
           </div>
       }
     </div>
