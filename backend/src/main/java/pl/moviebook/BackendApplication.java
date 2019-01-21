@@ -1397,6 +1397,46 @@ public class BackendApplication {
         return "Successful";
     }
 
+    // BAKSIUv13 
+    // 21.01.2018
+    @CrossOrigin
+    @RequestMapping("/changePassword/{login}/{oldPassword}/{newPassword}")
+    @ResponseBody
+    public String changePassword(
+        @PathVariable("login") String login,
+        @PathVariable("oldPassword") String oldPassword,
+        @PathVariable("newPassword") String newPassword) {
+        
+        Session session = connection.openSession();
+
+        // HQL syntax - createQuery
+        // SQL syntax - createSQLQery
+        Query<User> query = 
+        session.createQuery("from User where login = :login")
+                                                .setParameter("login", login);
+        User user = query.getSingleResult();
+        session.close();
+        
+        if (!user.getPassword().equals(oldPassword)) {
+            return "Unsuccessful: bad password";
+        }
+        else {
+            user.setPassword(newPassword);
+        }
+
+        session = connection.openSession();
+        session.beginTransaction();
+        session.update(user);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        return "Successful";
+    }
+
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
