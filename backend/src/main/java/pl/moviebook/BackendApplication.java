@@ -1363,7 +1363,21 @@ public class BackendApplication {
         return "Successful";
 
 
-    }    
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/getAllUserTypes")
+    @ResponseBody
+    public List<String> getAllUserTypes(){
+    	Session session = sessionFactory.openSession();
+    	
+        Query query = session.createSQLQuery("SELECT * FROM UserType");
+        List<String> list = query.list();
+        
+        session.close();
+
+        return list;
+    } 
     public static void main(String[] args) {
         
         SpringApplication.run(BackendApplication.class, args);
