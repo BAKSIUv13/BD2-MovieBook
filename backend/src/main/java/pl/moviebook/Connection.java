@@ -11,14 +11,6 @@ public class Connection {
 	private SessionFactory sessionFactory;
 	private Date lastConnection;
 	
-//	public static SessionFactory getSessionFactory() { 
-//		Configuration configuration = new Configuration()
-//									      .configure("hibernate.cfg.xml");
-//		SessionFactory sessionFactory = configuration.buildSessionFactory();
-//		
-//		return sessionFactory;
-//	}
-	
 	public Connection() {
 		lastConnection = new Date();
 		sessionFactory = getSessionFactory();
