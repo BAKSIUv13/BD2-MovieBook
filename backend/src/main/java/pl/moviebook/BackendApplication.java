@@ -1185,11 +1185,15 @@ public class BackendApplication {
     @CrossOrigin
     @RequestMapping("/getAllUsers")
     @ResponseBody
-    public List<Genre> getAllUsers(){
+    public List<User> getAllUsers(){
     	Session session = connection.openSession();
     	
-        Query<Genre> query = session.createQuery("from User");
-        List<Genre> list = query.list();
+        Query<User> query = session.createQuery("from User");
+        List<User> list = query.list();
+
+        for (User user : list) {
+            user.setPassword(null);
+        }
         
         session.close();
 
@@ -1387,6 +1391,46 @@ public class BackendApplication {
         Session session = connection.openSession();
         session.beginTransaction();
         session.delete(user);
+        try{
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            session.close();
+            return "Unsuccessful";
+        }
+        session.close();
+        return "Successful";
+    }
+
+    // BAKSIUv13 
+    // 21.01.2018
+    @CrossOrigin
+    @RequestMapping("/changePassword/{login}/{oldPassword}/{newPassword}")
+    @ResponseBody
+    public String changePassword(
+        @PathVariable("login") String login,
+        @PathVariable("oldPassword") String oldPassword,
+        @PathVariable("newPassword") String newPassword) {
+        
+        Session session = connection.openSession();
+
+        // HQL syntax - createQuery
+        // SQL syntax - createSQLQery
+        Query<User> query = 
+        session.createQuery("from User where login = :login")
+                                                .setParameter("login", login);
+        User user = query.getSingleResult();
+        session.close();
+        
+        if (!user.getPassword().equals(oldPassword)) {
+            return "Unsuccessful: bad password";
+        }
+        else {
+            user.setPassword(newPassword);
+        }
+
+        session = connection.openSession();
+        session.beginTransaction();
+        session.update(user);
         try{
             session.getTransaction().commit();
         } catch(Exception e) {
