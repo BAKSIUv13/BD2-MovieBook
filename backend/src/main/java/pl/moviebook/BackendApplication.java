@@ -1185,11 +1185,15 @@ public class BackendApplication {
     @CrossOrigin
     @RequestMapping("/getAllUsers")
     @ResponseBody
-    public List<Genre> getAllUsers(){
+    public List<User> getAllUsers(){
     	Session session = connection.openSession();
     	
-        Query<Genre> query = session.createQuery("from User");
-        List<Genre> list = query.list();
+        Query<User> query = session.createQuery("from User");
+        List<User> list = query.list();
+
+        for (User user : list) {
+            user.setPassword(null);
+        }
         
         session.close();
 
