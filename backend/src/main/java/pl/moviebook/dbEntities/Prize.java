@@ -28,10 +28,10 @@ public class Prize implements Serializable {
 	private int date;
 	
 	@Column(name="Artist_idArtist")
-	private int idArtist;
+	private Integer idArtist;
 	
 	@Column(name="Movie_idMovie")
-	private int idMovie;
+	private Integer idMovie;
 
 	public int getIdPrize() {
 		return idPrize;
@@ -65,19 +65,19 @@ public class Prize implements Serializable {
 		this.date = date;
 	}
 
-	public int getIdArtist() {
+	public Integer getIdArtist() {
 		return idArtist;
 	}
 
-	public void setIdArtist(int idArtist) {
+	public void setIdArtist(Integer idArtist) {
 		this.idArtist = idArtist;
 	}
 
-	public int getIdMovie() {
+	public Integer getIdMovie() {
 		return idMovie;
 	}
 
-	public void setIdMovie(int idMovie) {
+	public void setIdMovie(Integer idMovie) {
 		this.idMovie = idMovie;
 	}
 	

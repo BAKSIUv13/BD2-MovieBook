@@ -27,8 +27,10 @@ public class Connection {
 	public Session openSession() {
 		Date actualDate = new Date();
 		long seconds = (actualDate.getTime() - lastConnection.getTime())/1000;
-		if(seconds >= 110)
+		if(seconds >= 110) {
+			sessionFactory.close();
 			sessionFactory = getSessionFactory();
+		}
 		lastConnection = new Date();
 		Session session = sessionFactory.openSession();
 		return session;

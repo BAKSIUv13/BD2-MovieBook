@@ -149,6 +149,7 @@ public class BackendApplication {
             filmsToWatch.add(new MovieBasicInformations(id, (String) result[0], (Date) result[1], (String) result[2], genres));
         }
         
+        session.close();
         return filmsToWatch;
     }
 
@@ -251,6 +252,7 @@ public class BackendApplication {
             transmitions.add(new TransmitionOnStation((((Timestamp) transmition[0]).getTime()), (String) transmition[1], (int) transmition[2]));
         }
         
+        session.close();
         return transmitions;
     }
 
@@ -282,7 +284,7 @@ public class BackendApplication {
         for(Object[] show : showsSQLResult) {
             filmsInCinema.add(new FilmInCinema((((Timestamp) show[0]).getTime()), (String) show[1], (int) show[2]));
         }
-        
+        session.close();
         return filmsInCinema;
     }
     
@@ -296,6 +298,7 @@ public class BackendApplication {
         
         Object[] cinemaSQLResult = (Object[]) querySQL.getSingleResult();
         
+        session.close();
         return (String) cinemaSQLResult[0] + " " + (String) cinemaSQLResult[1];
         
     }
@@ -731,6 +734,7 @@ public class BackendApplication {
             return "Unsuccessful";
         }
         
+        session.close();
         return "Successful";
     }
     
@@ -970,6 +974,7 @@ public class BackendApplication {
         
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         
+        session.close();
         return new ArtistFullInformations(artist.getId(), artist.getSurname(), artist.getName(),
         		artist.getOrigin(), df.format(artist.getDate()), artist.getPictureUrl(), types, prizes, typeAndFilms);
     	
@@ -1133,7 +1138,7 @@ public class BackendApplication {
     @CrossOrigin
     @RequestMapping("/removeReview/{idReview}")
     @ResponseBody
-    public String addReview(
+    public String removeReview(
         @PathVariable("idReview") int idReview){
         
         Session session = connection.openSession();
@@ -1233,7 +1238,7 @@ public class BackendApplication {
             return "Unsuccessful";
         }
         
-        
+        session.close();
         return "Successful";
     }
     @CrossOrigin
@@ -1433,6 +1438,7 @@ public class BackendApplication {
     				(String) row[3], ((BigInteger) row[4]).intValue(), (int) row[5], (String) row[6]));
     	}
     	
+    	session.close();
     	return statistics;
     	
     }
@@ -1466,6 +1472,7 @@ public class BackendApplication {
     				(String) row[3], ((BigInteger) row[4]).intValue()));
     	}
     	
+    	session.close();
     	return statistics;
     	
     }
@@ -1510,6 +1517,44 @@ public class BackendApplication {
         }
         session.close();
         return "Successful";
+    }
+    
+    @CrossOrigin
+    @RequestMapping("/addPrize/{name}/{whatFor}/{date}/{idArtist}/{idMovie}")
+    @ResponseBody
+    public String addPrize(
+    		@PathVariable("name") String name,
+    		@PathVariable("whatFor") String whatFor,
+    		@PathVariable("date") int date,
+    		@PathVariable("idArtist") String idArtist,
+    		@PathVariable("idMovie") String idMovie) {
+    	
+    		Session session = connection.openSession();
+    		session.beginTransaction();
+    		Prize p = new Prize();
+    		p.setPrizeName(name);
+    		p.setWhatFor(whatFor);
+    		p.setDate(date);
+    		
+    		if(idArtist.equals("null"))
+    			p.setIdArtist(null);
+    		else 
+    			p.setIdArtist(Integer.parseInt(idArtist));
+    		
+    		if(idMovie.equals("null"))
+    			p.setIdMovie(null);
+    		else 
+    			p.setIdMovie(Integer.parseInt(idMovie));
+    		
+    		session.save(p);
+    		 try{
+    	            session.getTransaction().commit();
+    	        } catch(Exception e) {
+    	            session.close();
+    	            return "Unsuccessful";
+    	        }
+    	        session.close();
+    	    return "Successful";
     }
 
     public static void main(String[] args) {
