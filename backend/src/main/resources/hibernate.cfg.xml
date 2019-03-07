@@ -27,7 +27,7 @@
       </property>
       
       <property name = "hibernate.connection.password">
-         piotrsalata
+         1234
       </property>
       
       <mapping class="pl.moviebook.dbEntities.Artist"/>
